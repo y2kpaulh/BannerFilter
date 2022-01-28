@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "BannerPostionViewController.tapBannerBtn(_:):BannerPostionViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "BannerPositionView.tapDeleteBtn(_:):BannerPositionView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.bannerPosition.selectedSegmentIndex">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MTHKSwiftUiView.updateUIView(_:context:):MTHKSwiftUiView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in LiveViewController.bannerPositionMenu(imageArray:):LiveViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "$0.layer.rawValue">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "BannerPositionView.tapApplyBtn(_:):BannerPositionView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in LiveViewController.bannerPositionMenu():LiveViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "StreamingViewModel.publish():StreamingViewModel.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Preference.defaultInstance.uri">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
