@@ -12,10 +12,12 @@ final class PronamaEffect: VideoEffect {
             }
             
             UIGraphicsBeginImageContext(extent.size)
-            let image = UIImage(named: "banner13")!.resize(targetSize: CGSize(width: 720, height: 1280))
-            image.draw(at: CGPoint(x: 0, y: 0))
-            let image2 = UIImage(named: "Icon")!.resize(targetSize: CGSize(width: 80, height: 80))
-            image2.draw(at: CGPoint(x: 0, y: 0))
+            let image = UIImage(named: "Icon")!
+            print("image size",image.size)
+            
+            let drawPoint = CGPoint(x: point.x - image.size.width/2, y: point.y - image.size.height/2)
+            print("drawPoint", drawPoint)
+            image.draw(at:drawPoint)
             
             pronama = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
             UIGraphicsEndImageContext()
@@ -23,9 +25,14 @@ final class PronamaEffect: VideoEffect {
     }
     var pronama: CIImage?
     var banner: CIImage?
+    var point: CGPoint!
     
     override init() {
         super.init()
+    }
+    
+    init(point: CGPoint) {
+        self.point = point
     }
     
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {

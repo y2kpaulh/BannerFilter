@@ -321,8 +321,6 @@
 		2E435E6127980CD900A75298 /* UIControl+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E435E6027980CD900A75298 /* UIControl+Combine.swift */; };
 		2E435E8527A0E30800A75298 /* BannerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E435E8427A0E30800A75298 /* BannerSettingsView.xib */; };
 		2E435E8727A0E31E00A75298 /* BannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E435E8627A0E31E00A75298 /* BannerSettingsView.swift */; };
-		2EAEDE0E2785710F0020D693 /* ani.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0A2785710F0020D693 /* ani.gif */; };
-		2EAEDE0F2785710F0020D693 /* overtime.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0B2785710F0020D693 /* overtime.gif */; };
 		2EAEDE102785710F0020D693 /* mugen.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0C2785710F0020D693 /* mugen.gif */; };
 		2EAEDE112785710F0020D693 /* doolie.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0D2785710F0020D693 /* doolie.gif */; };
 		2EAEDE1427858B330020D693 /* MTHKSwiftUiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */; };
@@ -843,8 +841,6 @@
 		2E435E6027980CD900A75298 /* UIControl+Combine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Combine.swift"; sourceTree = "<group>"; };
 		2E435E8427A0E30800A75298 /* BannerSettingsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerSettingsView.xib; sourceTree = "<group>"; };
 		2E435E8627A0E31E00A75298 /* BannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerSettingsView.swift; sourceTree = "<group>"; };
-		2EAEDE0A2785710F0020D693 /* ani.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ani.gif; sourceTree = "<group>"; };
-		2EAEDE0B2785710F0020D693 /* overtime.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = overtime.gif; sourceTree = "<group>"; };
 		2EAEDE0C2785710F0020D693 /* mugen.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = mugen.gif; sourceTree = "<group>"; };
 		2EAEDE0D2785710F0020D693 /* doolie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = doolie.gif; sourceTree = "<group>"; };
 		2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTHKSwiftUiView.swift; sourceTree = "<group>"; };
@@ -1284,10 +1280,8 @@
 			children = (
 				296897431CDB01D20074D5F0 /* Info.plist */,
 				291F4E361CF206E200F59C51 /* Icon.png */,
-				2EAEDE0A2785710F0020D693 /* ani.gif */,
 				2EAEDE0D2785710F0020D693 /* doolie.gif */,
 				2EAEDE0C2785710F0020D693 /* mugen.gif */,
-				2EAEDE0B2785710F0020D693 /* overtime.gif */,
 				29205CBD1E461F4E009D3FFF /* Main.storyboard */,
 				296897411CDB01D20074D5F0 /* AppDelegate.swift */,
 				2E435E6027980CD900A75298 /* UIControl+Combine.swift */,
@@ -1851,7 +1845,6 @@
 			);
 			mainGroup = 2945CBB31B4BE66000104112;
 			packageReferences = (
-				2E3A6DA62784466700D7121A /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 2945CBBE1B4BE66000104112 /* Products */;
 			projectDirPath = "";
@@ -1910,8 +1903,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2EAEDE0E2785710F0020D693 /* ani.gif in Resources */,
-				2EAEDE0F2785710F0020D693 /* overtime.gif in Resources */,
 				2E435E8527A0E30800A75298 /* BannerSettingsView.xib in Resources */,
 				2EAEDE112785710F0020D693 /* doolie.gif in Resources */,
 				291F4E381CF206E600F59C51 /* Icon.png in Resources */,
@@ -3389,17 +3380,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		2E3A6DA62784466700D7121A /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 2945CBB41B4BE66000104112 /* Project object */;
 }

@@ -84,10 +84,11 @@ final class LiveViewController: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
     
     private var bannerSettingsView: BannerSettingsView!
+    
     var bannerLayer: [BannerLayer] = [BannerLayer(position: BannerPosition(layer: .bottom)),
                                       BannerLayer(position: BannerPosition(layer: .mid)),
                                       BannerLayer(position: BannerPosition(layer: .top))]
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         print("UIScreen.main.bounds: \(UIScreen.main.bounds)")
@@ -112,6 +113,17 @@ final class LiveViewController: UIViewController {
         
         videoBitrateSlider?.value = Float(RTMPStream.defaultVideoBitrate) / 1000
         audioBitrateSlider?.value = Float(RTMPStream.defaultAudioBitrate) / 1000
+                
+        //lfView.videoGravity = .resizeAspectFill
+        lfView.isUserInteractionEnabled = true
+
+        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
+        let panRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panScreen(_:)))
+        panRecognizer.delegate = self
+        panRecognizer.minimumNumberOfTouches = 1
+        
+        lfView.gestureRecognizers = [panRecognizer, tapRecognizer]
+        panRecognizer.require(toFail: tapRecognizer)
         
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
@@ -127,7 +139,6 @@ final class LiveViewController: UIViewController {
                 print("Unimplemented")
             }
         }
-        
     }
     
     @objc func tapPhotosBtn(_ sender: Any) {
@@ -138,31 +149,35 @@ final class LiveViewController: UIViewController {
         self.bannerSettingsView.removeFromSuperview()
     }
     
-    @objc func handler(gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: self.view)
-        let draggedView = gesture.view
+    @objc func panScreen(_ gesture: UIPanGestureRecognizer) {
+//        let translation = gesture.translation(in: view)
+
+        guard let gestureView = gesture.view else {
+            return
+        }
         
-        var screenLocation = location
+        let touchPoint: CGPoint = gesture.location(in: gestureView)
+        let pointOfInterest = CGPoint(x: touchPoint.x / gestureView.bounds.size.width, y: touchPoint.y / gestureView.bounds.size.height)
         
-        //        if location.x < self.bannerSettingsView.frame.size.width {
-        //            screenLocation.x = self.bannerSettingsView.frame.size.width/2
-        //        } else if location.x > UIScreen.main.bounds.width - self.bannerSettingsView.frame.size.width/2 {
-        //            screenLocation.x = UIScreen.main.bounds.width - self.bannerSettingsView.frame.size.width/2
-        //        }
-        //
-        //        if location.y < self.bannerSettingsView.frame.size.height {
-        //            screenLocation.y = self.bannerSettingsView.frame.size.height/2
-        //
-        //        } else if location.y > UIScreen.main.bounds.height - self.bannerSettingsView.frame.size.height/2 {
-        //            screenLocation.y = UIScreen.main.bounds.height - self.bannerSettingsView.frame.size.height/2
-        //        }
-        
-        //selectedPoi = screenLocation
-        
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0, delay: 0) {
-                draggedView?.center = screenLocation
+        let realPoint = CGPoint(x: currentResolution.width * pointOfInterest.x, y: currentResolution.height * pointOfInterest.y)
+
+        print("gesture.view", gestureView.bounds.size, "touchPoint: \(touchPoint), pointOfInterest: \(pointOfInterest), realPoint: \(realPoint)")
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let currentEffect: VideoEffect = self.currentEffect {
+                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
             }
+            self.currentEffect = PronamaEffect(point: realPoint)
+            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+        }
+    }
+    
+    @objc func tapScreen(_ gesture: UIGestureRecognizer) {
+        print(#function)
+        
+        if let currentEffect: VideoEffect = self.currentEffect {
+            _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
         }
     }
     
@@ -324,15 +339,6 @@ final class LiveViewController: UIViewController {
         rtmpConnection.connect(Preference.defaultInstance.uri!)
     }
     
-    func tapScreen(_ gesture: UIGestureRecognizer) {
-        if let gestureView = gesture.view, gesture.state == .ended {
-            let touchPoint: CGPoint = gesture.location(in: gestureView)
-            let pointOfInterest = CGPoint(x: touchPoint.x / gestureView.bounds.size.width, y: touchPoint.y / gestureView.bounds.size.height)
-            print("pointOfInterest: \(pointOfInterest)")
-            rtmpStream.setPointOfInterest(pointOfInterest, exposure: pointOfInterest)
-        }
-    }
-    
     @IBAction private func onFPSValueChanged(_ segment: UISegmentedControl) {
         switch segment.selectedSegmentIndex {
         case 0:
@@ -449,63 +455,11 @@ extension LiveViewController: PHPickerViewControllerDelegate {
     }
 }
 
-@IBDesignable extension UIView {
-    @IBInspectable var cornerRadius: CGFloat {
-        get { return layer.cornerRadius }
-        set {
-              layer.cornerRadius = newValue
-
-              // If masksToBounds is true, subviews will be
-              // clipped to the rounded corners.
-              layer.masksToBounds = (newValue > 0)
-        }
-    }
-}
-
-@IBDesignable extension UIView {
-    @IBInspectable var shadowRadius: CGFloat {
-        get { return layer.shadowRadius }
-        set { layer.shadowRadius = newValue }
-    }
-
-    @IBInspectable var shadowOpacity: CGFloat {
-        get { return CGFloat(layer.shadowOpacity) }
-        set { layer.shadowOpacity = Float(newValue) }
-    }
-
-    @IBInspectable var shadowOffset: CGSize {
-        get { return layer.shadowOffset }
-        set { layer.shadowOffset = newValue }
-    }
-
-    @IBInspectable var shadowColor: UIColor? {
-        get {
-            guard let cgColor = layer.shadowColor else {
-                return nil
-            }
-            return UIColor(cgColor: cgColor)
-        }
-        set { layer.shadowColor = newValue?.cgColor }
-    }
-}
-
-@IBDesignable extension UIView {
-    @IBInspectable var borderColor: UIColor? {
-        get {
-            guard let cgColor = layer.borderColor else {
-                return nil
-            }
-            return UIColor(cgColor: cgColor)
-        }
-        set { layer.borderColor = newValue?.cgColor }
-    }
-
-    @IBInspectable var borderWidth: CGFloat {
-        get {
-            return layer.borderWidth
-        }
-        set {
-            layer.borderWidth = newValue
-        }
+extension LiveViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        return true
     }
 }
