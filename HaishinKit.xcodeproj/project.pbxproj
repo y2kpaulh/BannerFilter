@@ -321,13 +321,13 @@
 		2E435E6127980CD900A75298 /* UIControl+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E435E6027980CD900A75298 /* UIControl+Combine.swift */; };
 		2E435E8527A0E30800A75298 /* BannerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E435E8427A0E30800A75298 /* BannerSettingsView.xib */; };
 		2E435E8727A0E31E00A75298 /* BannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E435E8627A0E31E00A75298 /* BannerSettingsView.swift */; };
-		2E98D5A127B50EC600A303BE /* ImageControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E98D5A027B50EC600A303BE /* ImageControlView.swift */; };
 		2EAEDE102785710F0020D693 /* mugen.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0C2785710F0020D693 /* mugen.gif */; };
 		2EAEDE112785710F0020D693 /* doolie.gif in Resources */ = {isa = PBXBuildFile; fileRef = 2EAEDE0D2785710F0020D693 /* doolie.gif */; };
 		2EAEDE1427858B330020D693 /* MTHKSwiftUiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */; };
 		2EAEDE1727858B900020D693 /* StreamingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1627858B900020D693 /* StreamingViewModel.swift */; };
 		2EAEDE1827858B940020D693 /* StreamingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1627858B900020D693 /* StreamingViewModel.swift */; };
 		2EAEDE1927859ED10020D693 /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291468161E581C7D00E619BA /* Preference.swift */; };
+		2EFCED0027BBA9030077AFA1 /* ImageControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */; };
 		BC0D236D26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
 		BC0D236E26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
 		BC0D236F26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
@@ -842,11 +842,11 @@
 		2E435E6027980CD900A75298 /* UIControl+Combine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+Combine.swift"; sourceTree = "<group>"; };
 		2E435E8427A0E30800A75298 /* BannerSettingsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerSettingsView.xib; sourceTree = "<group>"; };
 		2E435E8627A0E31E00A75298 /* BannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerSettingsView.swift; sourceTree = "<group>"; };
-		2E98D5A027B50EC600A303BE /* ImageControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageControlView.swift; path = ../../../../../Desktop/IOSDragViewsGesturesTutorial/IOSDragViewsGesturesTutorial/ImageControlView.swift; sourceTree = "<group>"; };
 		2EAEDE0C2785710F0020D693 /* mugen.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = mugen.gif; sourceTree = "<group>"; };
 		2EAEDE0D2785710F0020D693 /* doolie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = doolie.gif; sourceTree = "<group>"; };
 		2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTHKSwiftUiView.swift; sourceTree = "<group>"; };
 		2EAEDE1627858B900020D693 /* StreamingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingViewModel.swift; sourceTree = "<group>"; };
+		2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageControlView.swift; sourceTree = "<group>"; };
 		BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetSocket.CircularBuffer.swift; sourceTree = "<group>"; };
 		BC20DF2B2503747E007BC608 /* HKPictureInPictureControllerPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKPictureInPictureControllerPosition.swift; sourceTree = "<group>"; };
 		BC20DF33250374EA007BC608 /* HKPictureInPictureController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKPictureInPictureController+Extension.swift"; sourceTree = "<group>"; };
@@ -1295,7 +1295,7 @@
 				291468161E581C7D00E619BA /* Preference.swift */,
 				2950742E1E4620B7007F15A4 /* PreferenceViewController.swift */,
 				296897461CDB01D20074D5F0 /* VisualEffect.swift */,
-				2E98D5A027B50EC600A303BE /* ImageControlView.swift */,
+				2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */,
 				296897421CDB01D20074D5F0 /* Assets.xcassets */,
 				2968974D1CDB01DD0074D5F0 /* LaunchScreen.storyboard */,
 				29A39C801D85BEFA007C27E9 /* Screencast */,
@@ -2342,7 +2342,7 @@
 				296897681CDB02940074D5F0 /* LiveViewController.swift in Sources */,
 				BCFB355524FA27EA00DC5108 /* PlaybackViewController.swift in Sources */,
 				2EAEDE1727858B900020D693 /* StreamingViewModel.swift in Sources */,
-				2E98D5A127B50EC600A303BE /* ImageControlView.swift in Sources */,
+				2EFCED0027BBA9030077AFA1 /* ImageControlView.swift in Sources */,
 				2955F51F1D09EBAD004CC995 /* VisualEffect.swift in Sources */,
 				295074311E462105007F15A4 /* PreferenceViewController.swift in Sources */,
 			);
