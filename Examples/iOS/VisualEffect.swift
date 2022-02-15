@@ -13,7 +13,7 @@ final class TempBannerEffect: VideoEffect {
     var extent = CGRect.zero {
         didSet {
             UIGraphicsBeginImageContext(extent.size)
-            
+           
             if let imgArr = imageArray {
                 if imgArr.count > 1 {
                     if imgArr.count == currIndex + 1 {
@@ -25,8 +25,8 @@ final class TempBannerEffect: VideoEffect {
                 
                 var image: UIImage = imgArr[currIndex].resize(targetSize: rect.size)
                 
-                if let degrees = self.degrees {
-                    print("degrees", degrees)
+                if let degrees = degrees {
+                    print("publish degrees image")
                     image = image.imageRotatedByDegrees(degrees: degrees)
                 }
                 
@@ -34,6 +34,7 @@ final class TempBannerEffect: VideoEffect {
             }
             
             tmpBanner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
+            
             UIGraphicsEndImageContext()
         }
     }
@@ -102,6 +103,26 @@ extension UIImage {
         bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
         //Rotate the image context
         bitmap.rotate(by: (degrees * CGFloat.pi / 180))
+        //Now, draw the rotated/scaled image into the context
+        bitmap.scaleBy(x: 1.0, y: -1.0)
+        bitmap.draw(self.cgImage!, in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
+
+        let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+    
+    public func imageRotatedByRadian(radian: CGFloat) -> UIImage {
+        let rotatedSize: CGSize = CGRect(x: 0, y: 0, width: self.size.height, height: self.size.width).size
+
+        //Create the bitmap context
+        UIGraphicsBeginImageContext(rotatedSize)
+        let bitmap: CGContext = UIGraphicsGetCurrentContext()!
+        //Move the origin to the middle of the image so we will rotate and scale around the center.
+        bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+        //Rotate the image context
+        bitmap.rotate(by: radian)
         //Now, draw the rotated/scaled image into the context
         bitmap.scaleBy(x: 1.0, y: -1.0)
         bitmap.draw(self.cgImage!, in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))

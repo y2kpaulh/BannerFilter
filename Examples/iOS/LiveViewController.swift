@@ -75,8 +75,8 @@ final class LiveViewController: UIViewController {
     
     @IBOutlet weak var effectView: UIView!
     @IBOutlet weak var effectControlView: UIView!
-    
-    var tempControlView: ImageFilterControlView!
+        
+    var imageControlArray = [ImageFilterControlView]()
     
     private var rtmpConnection = RTMPConnection()
     private var rtmpStream: RTMPStream!
@@ -94,7 +94,7 @@ final class LiveViewController: UIViewController {
                                       BannerLayer(position: BannerPosition(layer: .mid)),
                                       BannerLayer(position: BannerPosition(layer: .top))]
     
-    var tmpBannerImgArray: [UIImage] = [UIImage]()
+    var editImgArray: [UIImage] = [UIImage]()
     
     var cancelBag = Set<AnyCancellable>()
     
@@ -180,11 +180,11 @@ final class LiveViewController: UIViewController {
             return
         }
         
-        guard tmpBannerImgArray.count > 0 else {
+        guard editImgArray.count > 0 else {
             return
         }
         
-        let tmpImg: UIImage = self.tmpBannerImgArray[0]
+        let tmpImg: UIImage = self.editImgArray[0]
         
         //        let touchPoint: CGPoint = gesture.location(in: gestureView)
         //
@@ -193,7 +193,7 @@ final class LiveViewController: UIViewController {
         //            if let currentEffect: VideoEffect = self.currentEffect {
         //                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
         //            }
-        //            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(touchPoint, imageSize: tmpImg.size), imageArray: self.tmpBannerImgArray)
+        //            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(touchPoint, imageSize: tmpImg.size), imageArray: self.editImgArray)
         //            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
         //        }
     }
@@ -213,7 +213,7 @@ final class LiveViewController: UIViewController {
     
     @objc func longPressScreen(_ gesture: UILongPressGestureRecognizer) {
         print(#function)
-        guard tmpBannerImgArray.count > 0 else {
+        guard editImgArray.count > 0 else {
             return
         }
 
@@ -429,11 +429,11 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                     if let frameList = self.changeDataToImageArray(data: data) {
                         //                        DispatchQueue.main.async { [unowned self] in
                         //                            //self.bannerSettingsView.imageArray = frameList
-                        //                            self.tmpBannerImgArray = frameList
+                        //                            self.editImgArray = frameList
                         //                            if let currentEffect: VideoEffect = self.currentEffect {
                         //                                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
                         //                            }
-                        //                            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(self.lfView.center, imageSize: self.tmpBannerImgArray[0].size), imageArray: self.tmpBannerImgArray)
+                        //                            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(self.lfView.center, imageSize: self.editImgArray[0].size), imageArray: self.editImgArray)
                         //                            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
                         //                        }
                     }
@@ -444,7 +444,7 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                         guard let image = image as? UIImage else { return }
                         
                         DispatchQueue.main.async { [unowned self] in
-                            self.tmpBannerImgArray = [image]
+                            self.editImgArray = [image]
                             print("select img size",image.size, self.view.bounds)
                             
                             let newPoint = CGPoint(x: 20, y: 240)
@@ -461,28 +461,12 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                             let publishRect = CGRect(origin: publishPoint, size: publishSize)
                             
                             print("publishRect", publishRect)
-                            tempControlView = ImageFilterControlView(frame: publishRect)
+                            let imgControlView = ImageFilterControlView(frame: publishRect)
                             
-                            tempControlView.frameEvent
-                                .sink(receiveValue: { newFrame in
-                                    //print("frameEvent", newFrame)
-                                    let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
-                                                           y: newFrame.origin.y * screenRatio.height)
-                                    let screenSize = CGSize(
-                                        width: newFrame.size.width * screenRatio.width,
-                                        height: newFrame.size.height * screenRatio.height)
-                                    let screenRect = CGRect(origin: screenPoint, size: screenSize)
-                                    
-                                    if let currentEffect: VideoEffect = self.currentEffect {
-                                        _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-                                    }
-                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.tmpBannerImgArray)
-                                    _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
-                                })
-                                .store(in: &self.cancelBag)
-                            
-                            tempControlView.rotateEvent
+                            imgControlView.gestureEvent
                                 .sink(receiveValue: { rotationEvent in
+                                    print("rotation event", rotationEvent)
+
                                     let newFrame = rotationEvent.0
                                     let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
                                                            y: newFrame.origin.y * screenRatio.height)
@@ -491,25 +475,30 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                                         height: newFrame.size.height * screenRatio.height)
                                     
                                     let screenRect = CGRect(origin: screenPoint, size: screenSize)
-                                    
-                                    let degrees = rotationEvent.1
-                                    print("rotation event", newFrame, degrees)
-                                    
+                                                                        
                                     if let currentEffect: VideoEffect = self.currentEffect {
                                         _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
                                     }
-                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.tmpBannerImgArray, degrees: degrees)
+                                    
+                                    if let degrees = rotationEvent.1 {
+                                        self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray, degrees: degrees)
+                                    } else {
+                                        self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray)
+                                    }
+                                                                      
                                     _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
                                 })
                                 .store(in: &self.cancelBag)
                             
-                            self.lfView.addSubview(tempControlView)
+                            self.imageControlArray.append(imgControlView)
                             
+                            self.lfView.addSubview(imgControlView)
+
                             if let currentEffect: VideoEffect = self.currentEffect {
                                 _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
                             }
                             
-                            self.currentEffect = TempBannerEffect(rect: newRect, imageArray: self.tmpBannerImgArray)
+                            self.currentEffect = TempBannerEffect(rect: newRect, imageArray: self.editImgArray)
                             _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
                         }
                     }
