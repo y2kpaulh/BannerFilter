@@ -23,14 +23,15 @@ final class TempBannerEffect: VideoEffect {
                     }
                 }
                 
-                var image: UIImage = imgArr[currIndex].resize(targetSize: rect.size)
-                
                 if let degrees = degrees {
-                    print("publish degrees image")
-                    image = image.imageRotatedByDegrees(degrees: degrees)
+                    print("change degrees", degrees)
+                    let rotatedImage = imgArr[currIndex].imageRotatedByDegrees(degrees: degrees)
+                    rotatedImage.draw(at: rect.origin)
                 }
-                
-                image.draw(at:rect.origin)
+                else{
+                    let image: UIImage = imgArr[currIndex].resize(targetSize: rect.size)
+                    image.draw(at:rect.origin)
+                }
             }
             
             tmpBanner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
@@ -93,6 +94,7 @@ extension UIImage {
 }
 
 extension UIImage {
+    
     public func imageRotatedByDegrees(degrees: CGFloat) -> UIImage {
         let rotatedSize: CGSize = CGRect(x: 0, y: 0, width: self.size.height, height: self.size.width).size
 

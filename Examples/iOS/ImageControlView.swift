@@ -22,7 +22,7 @@ class ImageFilterControlView: UIView {
         super.init(frame: frame)
         
         self.isUserInteractionEnabled = true
-        self.isMultipleTouchEnabled = true
+        //self.isMultipleTouchEnabled = true
         
         lastFrame = frame
         
@@ -45,8 +45,7 @@ class ImageFilterControlView: UIView {
         
         self.gestureRecognizers = [tapRecognizer, panRecognizer, pinchRecognizer, rotateRecognizer]
         panRecognizer.require(toFail: tapRecognizer)
-        pinchRecognizer.require(toFail: rotateRecognizer)
-
+        
         self.backgroundColor = .clear
         
 //        self.addDashedBorder()
@@ -127,7 +126,7 @@ class ImageFilterControlView: UIView {
 
         print("degrees", degrees)
         lastDegrees = degrees
-        lastFrame = self.frame
+        //lastFrame = self.frame
 
         gestureEvent.send((lastFrame, lastDegrees))
 

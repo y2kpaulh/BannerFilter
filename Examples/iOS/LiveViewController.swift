@@ -464,10 +464,11 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                             let imgControlView = ImageFilterControlView(frame: publishRect)
                             
                             imgControlView.gestureEvent
-                                .sink(receiveValue: { rotationEvent in
-                                    print("rotation event", rotationEvent)
+                                .sink(receiveValue: { gestureEvent in
+                                    print("gestureEvent", gestureEvent)
 
-                                    let newFrame = rotationEvent.0
+                                    let newFrame = gestureEvent.0
+                                    
                                     let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
                                                            y: newFrame.origin.y * screenRatio.height)
                                     let screenSize = CGSize(
@@ -480,11 +481,9 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                                         _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
                                     }
                                     
-                                    if let degrees = rotationEvent.1 {
-                                        self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray, degrees: degrees)
-                                    } else {
-                                        self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray)
-                                    }
+                                    print("publish rect", screenRect, "degrees", gestureEvent.1)
+
+                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray, degrees: gestureEvent.1)
                                                                       
                                     _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
                                 })
