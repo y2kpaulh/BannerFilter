@@ -2,149 +2,60 @@ import AVFoundation
 import HaishinKit
 import UIKit
 
-final class PronamaEffect: VideoEffect {
+final class TempBannerEffect: VideoEffect {
     let filter: CIFilter? = CIFilter(name: "CISourceOverCompositing")
+    var tmpBanner: CIImage?
+    var rect: CGRect!
+    var degrees: Double?
+    var imageArray: [UIImage]!
+    var currIndex = 0
     
     var extent = CGRect.zero {
         didSet {
-            if extent == oldValue {
-                return
-            }
-            
             UIGraphicsBeginImageContext(extent.size)
-            let image = UIImage(named: "Icon")!
-            print("image size",image.size)
             
-            let drawPoint = CGPoint(x: point.x - image.size.width/2, y: point.y - image.size.height/2)
-            print("drawPoint", drawPoint)
-            image.draw(at:drawPoint)
-            
-            pronama = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
-            UIGraphicsEndImageContext()
-        }
-    }
-    var pronama: CIImage?
-    var banner: CIImage?
-    var point: CGPoint!
-    
-    override init() {
-        super.init()
-    }
-    
-    init(point: CGPoint) {
-        self.point = point
-    }
-    
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let filter: CIFilter = filter else {
-            return image
-        }
-        extent = image.extent
-        filter.setValue(pronama!, forKey: "inputImage")
-        filter.setValue(image, forKey: "inputBackgroundImage")
-        return filter.outputImage!
-    }
-}
-
-final class MonochromeEffect: VideoEffect {
-    let filter: CIFilter? = CIFilter(name: "CIColorMonochrome")
-    
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let filter: CIFilter = filter else {
-            return image
-        }
-        filter.setValue(image, forKey: "inputImage")
-        filter.setValue(CIColor(red: 0.75, green: 0.75, blue: 0.75), forKey: "inputColor")
-        filter.setValue(1.0, forKey: "inputIntensity")
-        return filter.outputImage!
-    }
-}
-
-final class BannerEffect: VideoEffect {
-    let filter: CIFilter? = CIFilter(name: "CISourceOverCompositing")
-    var banner: CIImage?
-    var currIndexArray = [0, 0, 0]
-    var bannerLayers: [BannerLayer] = [BannerLayer]()
-
-    var extent = CGRect.zero {
-        didSet {
-//            if extent == oldValue {
-//                return
-//            }
-            UIGraphicsBeginImageContext(extent.size)
-            self.drawLayerImage(currIndexArray: &currIndexArray, extent: extent, layers: bannerLayers)
-            banner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
-            UIGraphicsEndImageContext()
-        }
-    }
-    
-    override init() {
-        super.init()
-    }
-    
-    init(layer: [BannerLayer]) {
-        self.bannerLayers = layer
-    }
-    
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let filter: CIFilter = filter else {
-            return image
-        }
-        extent = image.extent
-        filter.setValue(banner!, forKey: "inputImage")
-        filter.setValue(image, forKey: "inputBackgroundImage")
-        return filter.outputImage!
-    }
-    
-    func drawLayerImage(currIndexArray: inout [Int], extent: CGRect, layers: [BannerLayer]) {
-        for (index, layer) in layers.enumerated() {
-            if let imgArr = layer.imageArray, let align = layer.position.align, let margin = layer.position.margin {
-
+            if let imgArr = imageArray {
                 if imgArr.count > 1 {
-                    if imgArr.count == currIndexArray[index] + 1 {
-                        currIndexArray[index] = 0
+                    if imgArr.count == currIndex + 1 {
+                        currIndex = 0
                     } else {
-                        currIndexArray[index] = currIndexArray[index] + 1
+                        currIndex = currIndex + 1
                     }
                 }
                 
-                let image: UIImage = imgArr[currIndexArray[index]]
+                var image: UIImage = imgArr[currIndex].resize(targetSize: rect.size)
                 
-                switch align {
-                case .topLeft:
-                    image.draw(at: CGPoint(x: margin.x,
-                                           y: margin.y))
-                    
-                case .topMid:
-                    image.draw(at: CGPoint(x: (extent.size.width - image.size.width)/2 + margin.x,
-                                           y: margin.y))
-                    
-                case .topRight:
-                    image.draw(at: CGPoint(x: (extent.size.width - image.size.width) + margin.x,
-                                           y: margin.y))
-                    
-                case .midLeft:
-                    image.draw(at: CGPoint(x: margin.x,
-                                           y: (extent.size.height - image.size.height)/2 + margin.y))
-                    
-                case .midRight:
-                    image.draw(at: CGPoint(x: (extent.size.width - image.size.width) + margin.x,
-                                           y: (extent.size.height - image.size.height)/2 + margin.y))
-                    
-                case .bottomLeft:
-                    image.draw(at: CGPoint(x: margin.x,
-                                           y: (extent.size.height - image.size.height) + margin.y))
-                    
-                case .bottomMid:
-                    image.draw(at: CGPoint(x: (extent.size.width - image.size.width)/2 + margin.x,
-                                           y: (extent.size.height - image.size.height) + margin.y))
-                    
-                case .bottomRight:
-                    image.draw(at: CGPoint(x: (extent.size.width - image.size.width) + margin.x,
-                                           y: (extent.size.height - image.size.height) + margin.y))
+                if let degrees = self.degrees {
+                    print("degrees", degrees)
+                    image = image.imageRotatedByDegrees(degrees: degrees)
                 }
+                
+                image.draw(at:rect.origin)
             }
+            
+            tmpBanner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
+            UIGraphicsEndImageContext()
         }
+    }
+    
+    override init() {
+        super.init()
+    }
+    
+    init(rect: CGRect, imageArray: [UIImage], degrees: Double? = nil) {
+        self.rect = rect
+        self.imageArray = imageArray
+        self.degrees = degrees
+    }
+    
+    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+        guard let filter: CIFilter = filter else {
+            return image
+        }
+        extent = image.extent
+        filter.setValue(tmpBanner!, forKey: "inputImage")
+        filter.setValue(image, forKey: "inputBackgroundImage")
+        return filter.outputImage!
     }
 }
 
@@ -153,5 +64,51 @@ extension UIImage {
         return UIGraphicsImageRenderer(size:targetSize).image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
         }
+    }
+}
+
+extension UIImage {
+    func rotate(radians: Float) -> UIImage? {
+        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+
+        UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+
+        // Move origin to middle
+        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage
+    }
+}
+
+extension UIImage {
+    public func imageRotatedByDegrees(degrees: CGFloat) -> UIImage {
+        let rotatedSize: CGSize = CGRect(x: 0, y: 0, width: self.size.height, height: self.size.width).size
+
+        //Create the bitmap context
+        UIGraphicsBeginImageContext(rotatedSize)
+        let bitmap: CGContext = UIGraphicsGetCurrentContext()!
+        //Move the origin to the middle of the image so we will rotate and scale around the center.
+        bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+        //Rotate the image context
+        bitmap.rotate(by: (degrees * CGFloat.pi / 180))
+        //Now, draw the rotated/scaled image into the context
+        bitmap.scaleBy(x: 1.0, y: -1.0)
+        bitmap.draw(self.cgImage!, in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
+
+        let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+
+        UIGraphicsEndImageContext()
+        return newImage
     }
 }

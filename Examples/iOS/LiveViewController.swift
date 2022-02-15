@@ -73,6 +73,11 @@ final class LiveViewController: UIViewController {
     @IBOutlet private weak var fpsControl: UISegmentedControl!
     @IBOutlet private weak var effectSegmentControl: UISegmentedControl!
     
+    @IBOutlet weak var effectView: UIView!
+    @IBOutlet weak var effectControlView: UIView!
+    
+    var tempControlView: ImageFilterControlView!
+    
     private var rtmpConnection = RTMPConnection()
     private var rtmpStream: RTMPStream!
     private var sharedObject: RTMPSharedObject!
@@ -88,7 +93,19 @@ final class LiveViewController: UIViewController {
     var bannerLayer: [BannerLayer] = [BannerLayer(position: BannerPosition(layer: .bottom)),
                                       BannerLayer(position: BannerPosition(layer: .mid)),
                                       BannerLayer(position: BannerPosition(layer: .top))]
-
+    
+    var tmpBannerImgArray: [UIImage] = [UIImage]()
+    
+    var cancelBag = Set<AnyCancellable>()
+    
+    var publishSizeRatio: CGSize {
+        return CGSize(width: (lfView.bounds.size.width/currentResolution.width), height: (lfView.bounds.size.height/currentResolution.height))
+    }
+    
+    var screenSizeRatio: CGSize {
+        return CGSize(width: (currentResolution.width/lfView.bounds.size.width), height: (currentResolution.height/lfView.bounds.size.height))
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("UIScreen.main.bounds: \(UIScreen.main.bounds)")
@@ -113,17 +130,20 @@ final class LiveViewController: UIViewController {
         
         videoBitrateSlider?.value = Float(RTMPStream.defaultVideoBitrate) / 1000
         audioBitrateSlider?.value = Float(RTMPStream.defaultAudioBitrate) / 1000
-                
-        //lfView.videoGravity = .resizeAspectFill
+        
+        lfView.videoGravity = .resize
         lfView.isUserInteractionEnabled = true
-
-        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
+        
+        //let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
         let panRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panScreen(_:)))
         panRecognizer.delegate = self
         panRecognizer.minimumNumberOfTouches = 1
         
-        lfView.gestureRecognizers = [panRecognizer, tapRecognizer]
-        panRecognizer.require(toFail: tapRecognizer)
+        let longPressRecognizer: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressScreen(_:)))
+        
+        //lfView.gestureRecognizers = [panRecognizer, longPressRecognizer]//, tapRecognizer]
+        //panRecognizer.require(toFail: tapRecognizer)
+        //panRecognizer.require(toFail: longPressRecognizer)
         
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
@@ -141,36 +161,62 @@ final class LiveViewController: UIViewController {
         }
     }
     
+    @IBAction func tapAddBannerBtn(_ sender: Any) {
+        selectBanner()
+    }
+    
     @objc func tapPhotosBtn(_ sender: Any) {
-       selectBanner()
+        selectBanner()
     }
     
     @objc func tapCloseBtn(_ sender: Any) {
         self.bannerSettingsView.removeFromSuperview()
+        self.bannerSettingsView = nil
     }
     
     @objc func panScreen(_ gesture: UIPanGestureRecognizer) {
-//        let translation = gesture.translation(in: view)
-
+        // let translation = gesture.translation(in: view)
         guard let gestureView = gesture.view else {
             return
         }
         
-        let touchPoint: CGPoint = gesture.location(in: gestureView)
-        let pointOfInterest = CGPoint(x: touchPoint.x / gestureView.bounds.size.width, y: touchPoint.y / gestureView.bounds.size.height)
-        
-        let realPoint = CGPoint(x: currentResolution.width * pointOfInterest.x, y: currentResolution.height * pointOfInterest.y)
-
-        print("gesture.view", gestureView.bounds.size, "touchPoint: \(touchPoint), pointOfInterest: \(pointOfInterest), realPoint: \(realPoint)")
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if let currentEffect: VideoEffect = self.currentEffect {
-                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-            }
-            self.currentEffect = PronamaEffect(point: realPoint)
-            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+        guard tmpBannerImgArray.count > 0 else {
+            return
         }
+        
+        let tmpImg: UIImage = self.tmpBannerImgArray[0]
+        
+        //        let touchPoint: CGPoint = gesture.location(in: gestureView)
+        //
+        //        DispatchQueue.main.async { [weak self] in
+        //            guard let self = self else { return }
+        //            if let currentEffect: VideoEffect = self.currentEffect {
+        //                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
+        //            }
+        //            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(touchPoint, imageSize: tmpImg.size), imageArray: self.tmpBannerImgArray)
+        //            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+        //        }
+    }
+    
+//    func convertScalePosition(_ touchPoint: CGPoint, imageSize: CGSize) -> CGPoint {
+//        // scale position of streaming resolution
+//        let scalePoint = CGPoint(
+//            x: currentResolution.width * (touchPoint.x / lfView.bounds.size.width),
+//            y: currentResolution.height * (touchPoint.y / lfView.bounds.size.height)
+//        )
+//
+//        //draw image center position
+//        let drawPoint = CGPoint(x: scalePoint.x - imageSize.width/2, y: scalePoint.y - imageSize.height/2)
+//
+//        return drawPoint
+//    }
+    
+    @objc func longPressScreen(_ gesture: UILongPressGestureRecognizer) {
+        print(#function)
+        guard tmpBannerImgArray.count > 0 else {
+            return
+        }
+
     }
     
     @objc func tapScreen(_ gesture: UIGestureRecognizer) {
@@ -261,31 +307,6 @@ final class LiveViewController: UIViewController {
     
     @IBAction func buttonDidTap(_ sender: Any) {
         //selectBanner()
-        self.bannerPositionMenu()
-    }
-    
-    func bannerPositionMenu() {
-        self.bannerSettingsView = BannerSettingsView(frame: CGRect(x: 0, y: 0, width: 300, height: 500), bannerLayer:  self.bannerLayer)
-        
-        self.bannerSettingsView.bannerLayerEvent
-            .receive(on: DispatchQueue.main)
-            .sink { [unowned self] in
-                self.bannerSettingsView.removeFromSuperview()
-                self.bannerLayer = $0
-                
-                if let currentEffect: VideoEffect = self.currentEffect {
-                    _ =  self.rtmpStream.unregisterVideoEffect(currentEffect)
-                }
-
-                currentEffect = BannerEffect(layer: self.bannerLayer)
-                _ = rtmpStream.registerVideoEffect(currentEffect!)
-            }
-            .store(in: &subscriptions)
-        
-        self.bannerSettingsView.closeBtn.addTarget(self, action: #selector(tapCloseBtn(_:)), for: .touchUpInside)
-        self.bannerSettingsView.photosBtn.addTarget(self, action: #selector(tapPhotosBtn(_:)), for: .touchUpInside)
-        self.bannerSettingsView.center = self.view.center
-        self.view.addSubview(self.bannerSettingsView)
     }
     
     func selectBanner() {
@@ -357,12 +378,12 @@ final class LiveViewController: UIViewController {
             _ = rtmpStream.unregisterVideoEffect(currentEffect)
         }
         switch segment.selectedSegmentIndex {
-        case 1:
-            currentEffect = MonochromeEffect()
-            _ = rtmpStream.registerVideoEffect(currentEffect!)
-        case 2:
-            currentEffect = PronamaEffect()
-            _ = rtmpStream.registerVideoEffect(currentEffect!)
+//        case 1:
+//            currentEffect = MonochromeEffect()
+//            _ = rtmpStream.registerVideoEffect(currentEffect!)
+//        case 2:
+//            currentEffect = PronamaEffect()
+//            _ = rtmpStream.registerVideoEffect(currentEffect!)
         default:
             break
         }
@@ -405,19 +426,91 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                     guard let self = self else { return }
                     guard let data = data else { return }
                     
-                    if let frameList = self.changeDataToImageArray(data: data), self.bannerSettingsView != nil {
-                        DispatchQueue.main.async { [unowned self] in
-                            self.bannerSettingsView.imageArray = frameList
-                        }
+                    if let frameList = self.changeDataToImageArray(data: data) {
+                        //                        DispatchQueue.main.async { [unowned self] in
+                        //                            //self.bannerSettingsView.imageArray = frameList
+                        //                            self.tmpBannerImgArray = frameList
+                        //                            if let currentEffect: VideoEffect = self.currentEffect {
+                        //                                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
+                        //                            }
+                        //                            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(self.lfView.center, imageSize: self.tmpBannerImgArray[0].size), imageArray: self.tmpBannerImgArray)
+                        //                            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+                        //                        }
                     }
                 }
             } else {
                 if itemProvider.canLoadObject(ofClass: UIImage.self) {
                     itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
-                            if let image = image as? UIImage, self.bannerSettingsView != nil {
-                                DispatchQueue.main.async { [unowned self] in
-                                    self.bannerSettingsView.imageArray = [image]
+                        guard let image = image as? UIImage else { return }
+                        
+                        DispatchQueue.main.async { [unowned self] in
+                            self.tmpBannerImgArray = [image]
+                            print("select img size",image.size, self.view.bounds)
+                            
+                            let newPoint = CGPoint(x: 20, y: 240)
+                            let newSize = CGSize(width: image.size.width/2, height: image.size.height/2)
+                            let newRect = CGRect(origin: newPoint, size: newSize)
+                            
+                            let publishPoint = CGPoint(x: newPoint.x * publishSizeRatio.width,
+                                                   y: newPoint.y * publishSizeRatio.height)
+                            
+                            let publishSize = CGSize(
+                                width: newSize.width * publishSizeRatio.width,
+                                height: newSize.height * publishSizeRatio.height)
+                            
+                            let publishRect = CGRect(origin: publishPoint, size: publishSize)
+                            
+                            print("publishRect", publishRect)
+                            tempControlView = ImageFilterControlView(frame: publishRect)
+                            
+                            tempControlView.frameEvent
+                                .sink(receiveValue: { newFrame in
+                                    //print("frameEvent", newFrame)
+                                    let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
+                                                           y: newFrame.origin.y * screenRatio.height)
+                                    let screenSize = CGSize(
+                                        width: newFrame.size.width * screenRatio.width,
+                                        height: newFrame.size.height * screenRatio.height)
+                                    let screenRect = CGRect(origin: screenPoint, size: screenSize)
+                                    
+                                    if let currentEffect: VideoEffect = self.currentEffect {
+                                        _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
+                                    }
+                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.tmpBannerImgArray)
+                                    _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+                                })
+                                .store(in: &self.cancelBag)
+                            
+                            tempControlView.rotateEvent
+                                .sink(receiveValue: { rotationEvent in
+                                    let newFrame = rotationEvent.0
+                                    let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
+                                                           y: newFrame.origin.y * screenRatio.height)
+                                    let screenSize = CGSize(
+                                        width: newFrame.size.width * screenRatio.width,
+                                        height: newFrame.size.height * screenRatio.height)
+                                    
+                                    let screenRect = CGRect(origin: screenPoint, size: screenSize)
+                                    
+                                    let degrees = rotationEvent.1
+                                    print("rotation event", newFrame, degrees)
+                                    
+                                    if let currentEffect: VideoEffect = self.currentEffect {
+                                        _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
+                                    }
+                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.tmpBannerImgArray, degrees: degrees)
+                                    _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+                                })
+                                .store(in: &self.cancelBag)
+                            
+                            self.lfView.addSubview(tempControlView)
+                            
+                            if let currentEffect: VideoEffect = self.currentEffect {
+                                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
                             }
+                            
+                            self.currentEffect = TempBannerEffect(rect: newRect, imageArray: self.tmpBannerImgArray)
+                            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
                         }
                     }
                 } else {
