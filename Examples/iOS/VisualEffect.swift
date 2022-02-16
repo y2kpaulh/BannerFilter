@@ -23,15 +23,15 @@ final class TempBannerEffect: VideoEffect {
                     }
                 }
                 
+                var targetImage: UIImage = imgArr[currIndex]
+                
                 if let degrees = degrees {
-                    print("change degrees", degrees)
-                    let rotatedImage = imgArr[currIndex].imageRotatedByDegrees(degrees: degrees)
-                    rotatedImage.draw(at: rect.origin)
+                    targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
                 }
-                else{
-                    let image: UIImage = imgArr[currIndex].resize(targetSize: rect.size)
-                    image.draw(at:rect.origin)
-                }
+                
+                targetImage = targetImage.resize(targetSize: rect.size)
+
+                targetImage.draw(at: rect.origin)
             }
             
             tmpBanner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
@@ -66,72 +66,5 @@ extension UIImage {
         return UIGraphicsImageRenderer(size:targetSize).image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
         }
-    }
-}
-
-extension UIImage {
-    func rotate(radians: Float) -> UIImage? {
-        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
-        // Trim off the extremely small float value to prevent core graphics from rounding it up
-        newSize.width = floor(newSize.width)
-        newSize.height = floor(newSize.height)
-
-        UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
-        let context = UIGraphicsGetCurrentContext()!
-
-        // Move origin to middle
-        context.translateBy(x: newSize.width/2, y: newSize.height/2)
-        // Rotate around middle
-        context.rotate(by: CGFloat(radians))
-        // Draw the image at its center
-        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
-
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return newImage
-    }
-}
-
-extension UIImage {
-    
-    public func imageRotatedByDegrees(degrees: CGFloat) -> UIImage {
-        let rotatedSize: CGSize = CGRect(x: 0, y: 0, width: self.size.height, height: self.size.width).size
-
-        //Create the bitmap context
-        UIGraphicsBeginImageContext(rotatedSize)
-        let bitmap: CGContext = UIGraphicsGetCurrentContext()!
-        //Move the origin to the middle of the image so we will rotate and scale around the center.
-        bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
-        //Rotate the image context
-        bitmap.rotate(by: (degrees * CGFloat.pi / 180))
-        //Now, draw the rotated/scaled image into the context
-        bitmap.scaleBy(x: 1.0, y: -1.0)
-        bitmap.draw(self.cgImage!, in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
-
-        let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-
-        UIGraphicsEndImageContext()
-        return newImage
-    }
-    
-    public func imageRotatedByRadian(radian: CGFloat) -> UIImage {
-        let rotatedSize: CGSize = CGRect(x: 0, y: 0, width: self.size.height, height: self.size.width).size
-
-        //Create the bitmap context
-        UIGraphicsBeginImageContext(rotatedSize)
-        let bitmap: CGContext = UIGraphicsGetCurrentContext()!
-        //Move the origin to the middle of the image so we will rotate and scale around the center.
-        bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
-        //Rotate the image context
-        bitmap.rotate(by: radian)
-        //Now, draw the rotated/scaled image into the context
-        bitmap.scaleBy(x: 1.0, y: -1.0)
-        bitmap.draw(self.cgImage!, in: CGRect(x: -self.size.width / 2, y: -self.size.height / 2, width: self.size.width, height: self.size.height))
-
-        let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-
-        UIGraphicsEndImageContext()
-        return newImage
     }
 }
