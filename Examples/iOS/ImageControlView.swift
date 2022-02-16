@@ -89,7 +89,7 @@ class ImageFilterControlView: UIView {
     
         lastFrame = self.frame
         
-        gestureEvent.send((lastFrame, nil))
+        gestureEvent.send((lastFrame, lastDegrees))
     }
     
     @objc func detectTap(_ gesture: UITapGestureRecognizer) {
@@ -108,7 +108,7 @@ class ImageFilterControlView: UIView {
         gesture.scale = 1
         lastFrame = self.frame
         
-        gestureEvent.send((lastFrame, nil))
+        gestureEvent.send((lastFrame, lastDegrees))
     }
     
     @objc func detectRotation(_ gesture: UIRotationGestureRecognizer) {
