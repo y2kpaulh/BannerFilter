@@ -3,6 +3,20 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "ImageFilterEffect.init(layer:):VisualEffect.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ImageFilterControlView.tapCloseBtn(_sender:):ImageControlView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.tag">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ImageFilterEffect.drawLayerImage(currIndexArray:layer:):VisualEffect.swift">
+      </ContextState>
+      <ContextState
          contextName = "BannerPostionViewController.tapBannerBtn(_:):BannerPostionViewController.swift">
       </ContextState>
       <ContextState

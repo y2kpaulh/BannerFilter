@@ -37,6 +37,13 @@ struct BannerLayer {
     var imageArray: [UIImage]? = nil
 }
 
+struct ImageFilter {
+    var id = Int.random(in: 1...100)
+    var rect: CGRect
+    var imageArray: [UIImage]
+    var degrees: Double?
+}
+
 final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
     static let `default` = ExampleRecorderDelegate()
     
@@ -75,8 +82,9 @@ final class LiveViewController: UIViewController {
     
     @IBOutlet weak var effectView: UIView!
     @IBOutlet weak var effectControlView: UIView!
-        
-    var imageControlArray = [ImageFilterControlView]()
+    
+    var imageFilterArray = [ImageFilter]()
+    var imageControlViewArray = [ImageFilterControlView]()
     
     private var rtmpConnection = RTMPConnection()
     private var rtmpStream: RTMPStream!
@@ -93,8 +101,6 @@ final class LiveViewController: UIViewController {
     var bannerLayer: [BannerLayer] = [BannerLayer(position: BannerPosition(layer: .bottom)),
                                       BannerLayer(position: BannerPosition(layer: .mid)),
                                       BannerLayer(position: BannerPosition(layer: .top))]
-    
-    var editImgArray: [UIImage] = [UIImage]()
     
     var cancelBag = Set<AnyCancellable>()
     
@@ -139,8 +145,6 @@ final class LiveViewController: UIViewController {
         panRecognizer.delegate = self
         panRecognizer.minimumNumberOfTouches = 1
         
-        let longPressRecognizer: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressScreen(_:)))
-        
         //lfView.gestureRecognizers = [panRecognizer, longPressRecognizer]//, tapRecognizer]
         //panRecognizer.require(toFail: tapRecognizer)
         //panRecognizer.require(toFail: longPressRecognizer)
@@ -176,15 +180,15 @@ final class LiveViewController: UIViewController {
     
     @objc func panScreen(_ gesture: UIPanGestureRecognizer) {
         // let translation = gesture.translation(in: view)
-        guard let gestureView = gesture.view else {
-            return
-        }
-        
-        guard editImgArray.count > 0 else {
-            return
-        }
-        
-        let tmpImg: UIImage = self.editImgArray[0]
+        //        guard let gestureView = gesture.view else {
+        //            return
+        //        }
+        //
+        //        guard editImgArray.count > 0 else {
+        //            return
+        //        }
+        //
+        //        let tmpImg: UIImage = self.editImgArray[0]
         
         //        let touchPoint: CGPoint = gesture.location(in: gestureView)
         //
@@ -198,26 +202,18 @@ final class LiveViewController: UIViewController {
         //        }
     }
     
-//    func convertScalePosition(_ touchPoint: CGPoint, imageSize: CGSize) -> CGPoint {
-//        // scale position of streaming resolution
-//        let scalePoint = CGPoint(
-//            x: currentResolution.width * (touchPoint.x / lfView.bounds.size.width),
-//            y: currentResolution.height * (touchPoint.y / lfView.bounds.size.height)
-//        )
-//
-//        //draw image center position
-//        let drawPoint = CGPoint(x: scalePoint.x - imageSize.width/2, y: scalePoint.y - imageSize.height/2)
-//
-//        return drawPoint
-//    }
-    
-    @objc func longPressScreen(_ gesture: UILongPressGestureRecognizer) {
-        print(#function)
-        guard editImgArray.count > 0 else {
-            return
-        }
-
-    }
+    //    func convertScalePosition(_ touchPoint: CGPoint, imageSize: CGSize) -> CGPoint {
+    //        // scale position of streaming resolution
+    //        let scalePoint = CGPoint(
+    //            x: currentResolution.width * (touchPoint.x / lfView.bounds.size.width),
+    //            y: currentResolution.height * (touchPoint.y / lfView.bounds.size.height)
+    //        )
+    //
+    //        //draw image center position
+    //        let drawPoint = CGPoint(x: scalePoint.x - imageSize.width/2, y: scalePoint.y - imageSize.height/2)
+    //
+    //        return drawPoint
+    //    }
     
     @objc func tapScreen(_ gesture: UIGestureRecognizer) {
         print(#function)
@@ -378,12 +374,12 @@ final class LiveViewController: UIViewController {
             _ = rtmpStream.unregisterVideoEffect(currentEffect)
         }
         switch segment.selectedSegmentIndex {
-//        case 1:
-//            currentEffect = MonochromeEffect()
-//            _ = rtmpStream.registerVideoEffect(currentEffect!)
-//        case 2:
-//            currentEffect = PronamaEffect()
-//            _ = rtmpStream.registerVideoEffect(currentEffect!)
+            //        case 1:
+            //            currentEffect = MonochromeEffect()
+            //            _ = rtmpStream.registerVideoEffect(currentEffect!)
+            //        case 2:
+            //            currentEffect = PronamaEffect()
+            //            _ = rtmpStream.registerVideoEffect(currentEffect!)
         default:
             break
         }
@@ -414,98 +410,86 @@ final class LiveViewController: UIViewController {
     }
 }
 
-extension LiveViewController: PHPickerViewControllerDelegate {
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        
-        picker.dismiss(animated: true)
-        guard let itemProvider = results.first?.itemProvider else { return }
-        
-        itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, error in
-            if let url = url as NSURL?, let filePathURL = url.fileReferenceURL(), filePathURL.absoluteString.contains(".gif") {
-                itemProvider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, _ in
-                    guard let self = self else { return }
-                    guard let data = data else { return }
-                    
-                    if let frameList = self.changeDataToImageArray(data: data) {
-                        //                        DispatchQueue.main.async { [unowned self] in
-                        //                            //self.bannerSettingsView.imageArray = frameList
-                        //                            self.editImgArray = frameList
-                        //                            if let currentEffect: VideoEffect = self.currentEffect {
-                        //                                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-                        //                            }
-                        //                            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(self.lfView.center, imageSize: self.editImgArray[0].size), imageArray: self.editImgArray)
-                        //                            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
-                        //                        }
-                    }
-                }
-            } else {
-                if itemProvider.canLoadObject(ofClass: UIImage.self) {
-                    itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
-                        guard let image = image as? UIImage else { return }
-                        
-                        DispatchQueue.main.async { [unowned self] in
-                            self.editImgArray = [image]
-                            print("select img size",image.size, self.view.bounds)
-                            
-                            let newPoint = CGPoint(x: 20, y: 240)
-                            let newSize = CGSize(width: image.size.width/2, height: image.size.height/2)
-                            let newRect = CGRect(origin: newPoint, size: newSize)
-                            
-                            let publishPoint = CGPoint(x: newPoint.x * publishSizeRatio.width,
-                                                   y: newPoint.y * publishSizeRatio.height)
-                            
-                            let publishSize = CGSize(
-                                width: newSize.width * publishSizeRatio.width,
-                                height: newSize.height * publishSizeRatio.height)
-                            
-                            let publishRect = CGRect(origin: publishPoint, size: publishSize)
-                            
-                            print("publishRect", publishRect)
-                            let imgControlView = ImageFilterControlView(frame: publishRect)
-                            
-                            imgControlView.gestureEvent
-                                .sink(receiveValue: { gestureEvent in
-                                    print("gestureEvent", gestureEvent)
-
-                                    let newFrame = gestureEvent.0
-                                    
-                                    let screenPoint = CGPoint(x: newFrame.origin.x * screenRatio.width,
-                                                           y: newFrame.origin.y * screenRatio.height)
-                                    let screenSize = CGSize(
-                                        width: newFrame.size.width * screenRatio.width,
-                                        height: newFrame.size.height * screenRatio.height)
-                                    
-                                    let screenRect = CGRect(origin: screenPoint, size: screenSize)
-                                                                        
-                                    if let currentEffect: VideoEffect = self.currentEffect {
-                                        _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-                                    }
-                                    
-                                    print("publish rect", screenRect, "degrees", gestureEvent.1)
-
-                                    self.currentEffect = TempBannerEffect(rect: screenRect, imageArray: self.editImgArray, degrees: gestureEvent.1)
-                                                                      
-                                    _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
-                                })
-                                .store(in: &self.cancelBag)
-                            
-                            self.imageControlArray.append(imgControlView)
-                            
-                            self.lfView.addSubview(imgControlView)
-
-                            if let currentEffect: VideoEffect = self.currentEffect {
-                                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-                            }
-                            
-                            self.currentEffect = TempBannerEffect(rect: newRect, imageArray: self.editImgArray)
-                            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
-                        }
-                    }
-                } else {
-                    // TODO: Handle empty results or item provider not being able load UIImage
-                }
-            }
+extension LiveViewController {
+    fileprivate func updateImageFilter(_ imageFilter: [ImageFilter]) {
+        if let currentEffect: VideoEffect = self.currentEffect {
+            _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
         }
+        
+        self.currentEffect = ImageFilterEffect(layer: imageFilter)
+        _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
+    }
+    
+    fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
+        let image: UIImage = imageArray[0]
+        print("select img size",image.size, self.view.bounds)
+        
+        let newPoint = CGPoint(x: 20, y: 240)
+        let newSize = CGSize(width: image.size.width, height: image.size.height)
+        let newRect = CGRect(origin: newPoint, size: newSize)
+        
+        let publishPoint = CGPoint(x: newPoint.x * publishSizeRatio.width,
+                                   y: newPoint.y * publishSizeRatio.height)
+        
+        let publishSize = CGSize(
+            width: newSize.width * publishSizeRatio.width,
+            height: newSize.height * publishSizeRatio.height)
+        
+        let publishRect = CGRect(origin: publishPoint, size: publishSize)
+        print("publishRect", publishRect)
+        
+        let imgControlView = ImageFilterControlView(frame: publishRect)
+        
+        imgControlView.gestureEvent
+            .sink(receiveValue: { [unowned self] gestureEvent in
+                print("gestureEvent", gestureEvent)
+                let id: Int = gestureEvent.0
+                let frame: CGRect = gestureEvent.1
+                let degrees: Double? = gestureEvent.2
+                
+                let screenPoint = CGPoint(
+                    x: frame.origin.x * screenRatio.width,
+                    y: frame.origin.y * screenRatio.height)
+                
+                let screenSize = CGSize(
+                    width: frame.size.width * screenRatio.width,
+                    height: frame.size.height * screenRatio.height)
+                
+                let screenRect = CGRect(origin: screenPoint, size: screenSize)
+                
+                print("publish rect", screenRect, "degrees", degrees)
+                let index = self.imageFilterArray.firstIndex{ $0.id == id}!
+
+                var imgFilter = self.imageFilterArray[index]
+                imgFilter.rect = screenRect
+                imgFilter.degrees = degrees
+                self.imageFilterArray[index] = imgFilter
+                
+                self.updateImageFilter(self.imageFilterArray)
+            })
+            .store(in: &self.cancelBag)
+        
+        imgControlView.closeEvent
+            .sink(receiveValue: { id in
+                print("closeEvent")
+                let index = self.imageFilterArray.firstIndex{ $0.id == id}!
+                self.imageControlViewArray[index].removeFromSuperview()
+                
+                self.imageControlViewArray.remove(at: index)
+                self.imageFilterArray.remove(at: index)
+                
+                self.updateImageFilter(self.imageFilterArray)
+            })
+            .store(in: &self.cancelBag)
+        
+        let imageFilter: ImageFilter = ImageFilter(rect: newRect, imageArray: imageArray)
+        self.imageFilterArray.append(imageFilter)
+        
+        imgControlView.tag = imageFilter.id
+        self.imageControlViewArray.append(imgControlView)
+        
+        self.lfView.addSubview(imgControlView)
+        self.updateImageFilter(self.imageFilterArray)
     }
     
     func changeDataToImageArray(data: Data) -> [UIImage]? {
@@ -533,6 +517,39 @@ extension LiveViewController: PHPickerViewControllerDelegate {
         }
         
         return frameList
+    }
+}
+
+extension LiveViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let itemProvider = results.first?.itemProvider else { return }
+        
+        itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, error in
+            if let url = url as NSURL?, let filePathURL = url.fileReferenceURL(), filePathURL.absoluteString.contains(".gif") {
+                itemProvider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, _ in
+                    guard let self = self else { return }
+                    guard let data = data else { return }
+                    
+                    guard let imageArray = self.changeDataToImageArray(data: data) else { return }
+                    DispatchQueue.main.async { [unowned self] in
+                        self.publishImageFilter(imageArray)
+                    }
+                }
+            } else {
+                if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                    itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+                        guard let image = image as? UIImage else { return }
+                        DispatchQueue.main.async { [unowned self] in
+                            publishImageFilter([image])
+                        }
+                    }
+                } else {
+                    // TODO: Handle empty results or item provider not being able load UIImage
+                }
+            }
+        }
     }
 }
 

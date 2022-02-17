@@ -16,8 +16,9 @@ class ImageFilterControlView: UIView {
     var closeBtn: UIButton!
     var frameView: UIView!
     
-    var gestureEvent = PassthroughSubject<(CGRect,Double?), Never>()
-    
+    var gestureEvent = PassthroughSubject<(Int, CGRect, Double?), Never>()
+    var closeEvent = PassthroughSubject<Int, Never>()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -63,10 +64,13 @@ class ImageFilterControlView: UIView {
     
     @objc func tapCloseBtn(_sender: UIButton) {
         print(#function)
-        print("Checked!")
-        UIView.animate(withDuration: 0.5) {
-            self.removeFromSuperview()
-        }
+//        UIView.animate(withDuration: 0.5) {
+//            self.removeFromSuperview()
+//            self.closeEvent.send(self.tag)
+//        }
+        
+        print("self.tag", self.tag)
+        self.closeEvent.send(self.tag)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -84,7 +88,7 @@ class ImageFilterControlView: UIView {
     
         lastFrame = self.frame
         
-        gestureEvent.send((lastFrame, lastDegrees))
+        gestureEvent.send((self.tag, lastFrame, lastDegrees))
     }
     
     @objc func detectTap(_ gesture: UITapGestureRecognizer) {
@@ -103,7 +107,7 @@ class ImageFilterControlView: UIView {
         gesture.scale = 1
         lastFrame = self.frame
         
-        gestureEvent.send((lastFrame, lastDegrees))
+        gestureEvent.send((self.tag, lastFrame, lastDegrees))
     }
     
     @objc func detectRotation(_ gesture: UIRotationGestureRecognizer) {
@@ -123,7 +127,7 @@ class ImageFilterControlView: UIView {
         lastDegrees = degrees
         //lastFrame = self.frame
 
-        gestureEvent.send((lastFrame, lastDegrees))
+        gestureEvent.send((self.tag, lastFrame, lastDegrees))
 
         gesture.rotation = 0
     }
@@ -165,36 +169,5 @@ extension UIView {
         shapeLayer.path = UIBezierPath(roundedRect: shapeRect, cornerRadius: 4).cgPath
 
         self.layer.addSublayer(shapeLayer)
-    }
-}
-
-extension UIImage {
-    struct RotationOptions: OptionSet {
-        let rawValue: Int
-
-        static let flipOnVerticalAxis = RotationOptions(rawValue: 1)
-        static let flipOnHorizontalAxis = RotationOptions(rawValue: 2)
-    }
-
-    func rotated(by rotationAngle: Measurement<UnitAngle>, options: RotationOptions = []) -> UIImage? {
-        guard let cgImage = self.cgImage else { return nil }
-
-        let rotationInRadians = CGFloat(rotationAngle.converted(to: .radians).value)
-        let transform = CGAffineTransform(rotationAngle: rotationInRadians)
-        var rect = CGRect(origin: .zero, size: self.size).applying(transform)
-        rect.origin = .zero
-
-        let renderer = UIGraphicsImageRenderer(size: rect.size)
-        return renderer.image { renderContext in
-            renderContext.cgContext.translateBy(x: rect.midX, y: rect.midY)
-            renderContext.cgContext.rotate(by: rotationInRadians)
-
-            let x = options.contains(.flipOnVerticalAxis) ? -1.0 : 1.0
-            let y = options.contains(.flipOnHorizontalAxis) ? 1.0 : -1.0
-            renderContext.cgContext.scaleBy(x: CGFloat(x), y: CGFloat(y))
-
-            let drawRect = CGRect(origin: CGPoint(x: -self.size.width/2, y: -self.size.height/2), size: self.size)
-            renderContext.cgContext.draw(cgImage, in: drawRect)
-        }
     }
 }
