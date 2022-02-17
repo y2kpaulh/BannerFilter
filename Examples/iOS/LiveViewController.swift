@@ -140,14 +140,8 @@ final class LiveViewController: UIViewController {
         lfView.videoGravity = .resize
         lfView.isUserInteractionEnabled = true
         
-        //let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
-        let panRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panScreen(_:)))
-        panRecognizer.delegate = self
-        panRecognizer.minimumNumberOfTouches = 1
-        
-        //lfView.gestureRecognizers = [panRecognizer, longPressRecognizer]//, tapRecognizer]
-        //panRecognizer.require(toFail: tapRecognizer)
-        //panRecognizer.require(toFail: longPressRecognizer)
+        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
+        lfView.gestureRecognizers = [tapRecognizer]
         
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
@@ -177,50 +171,45 @@ final class LiveViewController: UIViewController {
         self.bannerSettingsView.removeFromSuperview()
         self.bannerSettingsView = nil
     }
-    
-    @objc func panScreen(_ gesture: UIPanGestureRecognizer) {
-        // let translation = gesture.translation(in: view)
-        //        guard let gestureView = gesture.view else {
-        //            return
-        //        }
-        //
-        //        guard editImgArray.count > 0 else {
-        //            return
-        //        }
-        //
-        //        let tmpImg: UIImage = self.editImgArray[0]
-        
-        //        let touchPoint: CGPoint = gesture.location(in: gestureView)
-        //
-        //        DispatchQueue.main.async { [weak self] in
-        //            guard let self = self else { return }
-        //            if let currentEffect: VideoEffect = self.currentEffect {
-        //                _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
-        //            }
-        //            self.currentEffect = TempBannerEffect(point: self.convertScalePosition(touchPoint, imageSize: tmpImg.size), imageArray: self.editImgArray)
-        //            _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
-        //        }
+
+    fileprivate func hideImageControlView(id: Int, delay: Double) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
+                let changedView = self.imageControlViewArray[searchIndex]
+                changedView.isHidden = true
+                self.imageControlViewArray[searchIndex] = changedView
+            }
+        }
     }
     
-    //    func convertScalePosition(_ touchPoint: CGPoint, imageSize: CGSize) -> CGPoint {
-    //        // scale position of streaming resolution
-    //        let scalePoint = CGPoint(
-    //            x: currentResolution.width * (touchPoint.x / lfView.bounds.size.width),
-    //            y: currentResolution.height * (touchPoint.y / lfView.bounds.size.height)
-    //        )
-    //
-    //        //draw image center position
-    //        let drawPoint = CGPoint(x: scalePoint.x - imageSize.width/2, y: scalePoint.y - imageSize.height/2)
-    //
-    //        return drawPoint
-    //    }
-    
     @objc func tapScreen(_ gesture: UIGestureRecognizer) {
-        print(#function)
-        
-        if let currentEffect: VideoEffect = self.currentEffect {
-            _ = self.rtmpStream.unregisterVideoEffect(currentEffect)
+        guard let gestureView = gesture.view else {
+            return
         }
+        
+        let touchPoint: CGPoint = gesture.location(in: gestureView)
+        print("touchPoint", touchPoint)
+
+        for (index, controlView) in self.imageControlViewArray.enumerated().reversed() {
+            let filterRect = controlView.frame
+
+            if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
+                (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) {
+
+                let imgFilter = self.imageFilterArray[index]
+                
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.5) {
+                        let changedView = controlView
+                        changedView.isHidden = false
+                        self.imageControlViewArray[index] = changedView
+                        self.hideImageControlView(id: imgFilter.id, delay: 3.0)
+                    }
+                 }
+                return
+            }
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -459,37 +448,45 @@ extension LiveViewController {
                 
                 print("publish rect", screenRect, "degrees", degrees)
                 let index = self.imageFilterArray.firstIndex{ $0.id == id}!
-
+                
                 var imgFilter = self.imageFilterArray[index]
                 imgFilter.rect = screenRect
                 imgFilter.degrees = degrees
-                self.imageFilterArray[index] = imgFilter
                 
+                self.imageFilterArray[index] = imgFilter
                 self.updateImageFilter(self.imageFilterArray)
+                self.hideImageControlView(id: imgFilter.id, delay: 1.0)
             })
             .store(in: &self.cancelBag)
         
         imgControlView.closeEvent
             .sink(receiveValue: { id in
                 print("closeEvent")
-                let index = self.imageFilterArray.firstIndex{ $0.id == id}!
-                self.imageControlViewArray[index].removeFromSuperview()
                 
-                self.imageControlViewArray.remove(at: index)
-                self.imageFilterArray.remove(at: index)
-                
-                self.updateImageFilter(self.imageFilterArray)
+                DispatchQueue.main.async() {
+                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
+                        self.imageFilterArray.remove(at: searchIndex)
+                        UIView.animate(withDuration: 0.5) {
+                            self.imageControlViewArray[searchIndex].removeFromSuperview()
+                        }
+                        self.imageControlViewArray.remove(at: searchIndex)
+
+                        self.updateImageFilter(self.imageFilterArray)
+                    }
+                }
             })
             .store(in: &self.cancelBag)
         
-        let imageFilter: ImageFilter = ImageFilter(rect: newRect, imageArray: imageArray)
-        self.imageFilterArray.append(imageFilter)
+        let imgFilter: ImageFilter = ImageFilter(rect: newRect, imageArray: imageArray)
+        self.imageFilterArray.append(imgFilter)
         
-        imgControlView.tag = imageFilter.id
+        imgControlView.tag = imgFilter.id
         self.imageControlViewArray.append(imgControlView)
         
         self.lfView.addSubview(imgControlView)
         self.updateImageFilter(self.imageFilterArray)
+        
+        self.hideImageControlView(id: imgFilter.id, delay: 1.0)
     }
     
     func changeDataToImageArray(data: Data) -> [UIImage]? {
