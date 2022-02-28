@@ -37,12 +37,6 @@ struct BannerLayer {
     var imageArray: [UIImage]? = nil
 }
 
-struct ImageFilter {
-    var id = Int.random(in: 1...100)
-    var rect: CGRect
-    var imageArray: [UIImage]
-    var degrees: Double?
-}
 
 final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
     static let `default` = ExampleRecorderDelegate()
@@ -96,11 +90,9 @@ final class LiveViewController: UIViewController {
     private var currentResolution: CGSize = CGSize(width: 720, height: 1280)
     private var subscriptions = Set<AnyCancellable>()
     
-    private var bannerSettingsView: BannerSettingsView!
+    var filterMenuView: ImageFilterMenuView!
     
-    var bannerLayer: [BannerLayer] = [BannerLayer(position: BannerPosition(layer: .bottom)),
-                                      BannerLayer(position: BannerPosition(layer: .mid)),
-                                      BannerLayer(position: BannerPosition(layer: .top))]
+    var viewModel = ViewModel()
     
     var cancelBag = Set<AnyCancellable>()
     
@@ -145,33 +137,21 @@ final class LiveViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
-        let requiredAccessLevel: PHAccessLevel = .readWrite
-        PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
-            switch authorizationStatus {
-            case .limited:
-                print("limited authorization granted")
-            case .authorized:
-                print("authorization granted")
-            default:
-                //FIXME: Implement handling for all authorizationStatus
-                print("Unimplemented")
-            }
-        }
+        self.viewModel.configPhotosUI()
     }
+    
     
     @IBAction func tapAddBannerBtn(_ sender: Any) {
-        selectBanner()
+        filterMenuView = ImageFilterMenuView(frame: self.view.frame)
+        filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
+        self.view.addSubview(filterMenuView)
     }
     
-    @objc func tapPhotosBtn(_ sender: Any) {
-        selectBanner()
-    }
+    //    @objc func tapCloseBtn(_ sender: Any) {
+    //        self.bannerSettingsView.removeFromSuperview()
+    //        self.bannerSettingsView = nil
+    //    }
     
-    @objc func tapCloseBtn(_ sender: Any) {
-        self.bannerSettingsView.removeFromSuperview()
-        self.bannerSettingsView = nil
-    }
-
     fileprivate func hideImageControlView(id: Int, delay: Double) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
@@ -189,13 +169,13 @@ final class LiveViewController: UIViewController {
         
         let touchPoint: CGPoint = gesture.location(in: gestureView)
         print("touchPoint", touchPoint)
-
+        
         for (index, controlView) in self.imageControlViewArray.enumerated().reversed() {
             let filterRect = controlView.frame
-
+            
             if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
                 (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) {
-
+                
                 let imgFilter = self.imageFilterArray[index]
                 
                 DispatchQueue.main.async {
@@ -205,7 +185,7 @@ final class LiveViewController: UIViewController {
                         self.imageControlViewArray[index] = changedView
                         self.hideImageControlView(id: imgFilter.id, delay: 3.0)
                     }
-                 }
+                }
                 return
             }
         }
@@ -294,7 +274,7 @@ final class LiveViewController: UIViewController {
         //selectBanner()
     }
     
-    func selectBanner() {
+    @objc func selectPhotos() {
         let accessLevel: PHAccessLevel = .readWrite
         let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: accessLevel)
         
@@ -411,110 +391,129 @@ extension LiveViewController {
     
     fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
         let image: UIImage = imageArray[0]
-        print("select img size",image.size, self.view.bounds)
         
-        let newPoint = CGPoint(x: 20, y: 240)
-        let newSize = CGSize(width: image.size.width, height: image.size.height)
-        let newRect = CGRect(origin: newPoint, size: newSize)
+        let imageInfo = ImageInfo(size: image.size,
+                                  ratio: max(image.size.width, image.size.height))
         
-        let publishPoint = CGPoint(x: newPoint.x * publishSizeRatio.width,
-                                   y: newPoint.y * publishSizeRatio.height)
+        var scaledImageSize = CGSize(width: image.size.width,
+                                     height: image.size.height)
         
-        let publishSize = CGSize(
-            width: newSize.width * publishSizeRatio.width,
-            height: newSize.height * publishSizeRatio.height)
+        var publishSize = CGSize(
+            width: scaledImageSize.width * publishSizeRatio.width,
+            height: scaledImageSize.height * publishSizeRatio.height)
         
-        let publishRect = CGRect(origin: publishPoint, size: publishSize)
-        print("publishRect", publishRect)
+        if image.size.width > currentResolution.width * 0.8 {
+            let maxLength = currentResolution.width * 0.8
+            let scaleFactor = maxLength / imageInfo.ratio
+            
+            scaledImageSize = CGSize(width: scaledImageSize.width * scaleFactor,
+                                     height: scaledImageSize.height * scaleFactor)
+            publishSize = CGSize(
+                width: scaledImageSize.width * publishSizeRatio.width,
+                height: scaledImageSize.height * publishSizeRatio.height)
+        }
         
-        let imgControlView = ImageFilterControlView(frame: publishRect)
+        let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: publishSize))
+        controlView.center = self.view.center
         
-        imgControlView.gestureEvent
-            .sink(receiveValue: { [unowned self] gestureEvent in
-                print("gestureEvent", gestureEvent)
-                let id: Int = gestureEvent.0
-                let frame: CGRect = gestureEvent.1
-                let degrees: Double? = gestureEvent.2
+        let imgFilter: ImageFilter = ImageFilter(rect: controlView.frame, imageArray: imageArray, info: imageInfo)
+        controlView.tag = imgFilter.id
+        
+        let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
+        sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
+        sizeControlView.tag = imgFilter.id
+        
+        let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 100, y: 100), size: CGSize(width: 30, height: 30)))
+        closeBtn.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.origin.y + 5)
+        closeBtn.tag = imgFilter.id
+        
+        let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
+        let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
+        
+        sizeControlView.dragEvent
+            .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint) in
+                print("dragEvent", viewId, beginPoint, endPoint)
                 
-                let screenPoint = CGPoint(
-                    x: frame.origin.x * screenRatio.width,
-                    y: frame.origin.y * screenRatio.height)
-                
-                let screenSize = CGSize(
-                    width: frame.size.width * screenRatio.width,
-                    height: frame.size.height * screenRatio.height)
-                
-                let screenRect = CGRect(origin: screenPoint, size: screenSize)
-                
-                print("publish rect", screenRect, "degrees", degrees)
-                let index = self.imageFilterArray.firstIndex{ $0.id == id}!
-                
-                var imgFilter = self.imageFilterArray[index]
-                imgFilter.rect = screenRect
-                imgFilter.degrees = degrees
-                
-                self.imageFilterArray[index] = imgFilter
-                self.updateImageFilter(self.imageFilterArray)
-                self.hideImageControlView(id: imgFilter.id, delay: 1.0)
+                //                        print("gestureEvent", gestureEvent)
+                //                        let id: Int = gestureEvent.0
+                //                        let frame: CGRect = gestureEvent.1
+                //                        let degrees: Double? = gestureEvent.2
+                //
+                //                        let screenPoint = CGPoint(
+                //                            x: frame.origin.x * screenRatio.width,
+                //                            y: frame.origin.y * screenRatio.height)
+                //
+                //                        let screenSize = CGSize(
+                //                            width: frame.size.width * screenRatio.width,
+                //                            height: frame.size.height * screenRatio.height)
+                //
+                //                        let screenRect = CGRect(origin: screenPoint, size: screenSize)
+                //
+                //                        print("publish rect", screenRect, "degrees", degrees)
+                //                        let index = self.imageFilterArray.firstIndex{ $0.id == id}!
+                //
+                //                        var imgFilter = self.imageFilterArray[index]
+                //                        imgFilter.rect = screenRect
+                //                        imgFilter.degrees = degrees
+                //
+                //                        self.imageFilterArray[index] = imgFilter
+                //                        self.updateImageFilter(self.imageFilterArray)
+                //                        self.hideImageControlView(id: imgFilter.id, delay: 1.0)
             })
             .store(in: &self.cancelBag)
         
-        imgControlView.closeEvent
-            .sink(receiveValue: { id in
-                print("closeEvent")
-                
-                DispatchQueue.main.async() {
-                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
-                        self.imageFilterArray.remove(at: searchIndex)
-                        UIView.animate(withDuration: 0.5) {
-                            self.imageControlViewArray[searchIndex].removeFromSuperview()
-                        }
-                        self.imageControlViewArray.remove(at: searchIndex)
+        controlView.panEvent
+            .sink(receiveValue: { [unowned self] (viewId, frame) in
+                print("panchEvent", viewId, frame)
+            })
+            .store(in: &self.cancelBag)
+        
+        controlView.pinchEvent
+            .sink(receiveValue: { [unowned self] (viewId, frame) in
+                print("pinchEvent", viewId, frame)
+            })
+            .store(in: &self.cancelBag)
+        
+        controlView.tapEvent
+            .sink(receiveValue: { [unowned self] (viewId) in
+                print("tapEvent", viewId)
+            })
+            .store(in: &self.cancelBag)
+        
+        closeBtn.closeEvent
+            .sink(receiveValue: { [unowned self] (viewId) in
+                print("closeEvent", viewId)
+            })
+            .store(in: &self.cancelBag)
+        //
+        //        imgControlView.closeEvent
+        //            .sink(receiveValue: { id in
+        //                print("closeEvent")
+        //
+        //                DispatchQueue.main.async() {
+        //                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
+        //                        self.imageFilterArray.remove(at: searchIndex)
+        //                        UIView.animate(withDuration: 0.5) {
+        //                            self.imageControlViewArray[searchIndex].removeFromSuperview()
+        //                        }
+        //                        self.imageControlViewArray.remove(at: searchIndex)
+        //
+        //                        self.updateImageFilter(self.imageFilterArray)
+        //                    }
+        //                }
+        //            })
+        //            .store(in: &self.cancelBag)
+        //
+        
+        self.viewModel.imageFilter.append(filterData)
+        
+        self.filterMenuView.addSubview(controlView)
+        self.filterMenuView.addSubview(sizeControlView)
+        self.filterMenuView.addSubview(closeBtn)
+   
+        //        self.updateImageFilter(self.imageFilterArray)
+    }
 
-                        self.updateImageFilter(self.imageFilterArray)
-                    }
-                }
-            })
-            .store(in: &self.cancelBag)
-        
-        let imgFilter: ImageFilter = ImageFilter(rect: newRect, imageArray: imageArray)
-        self.imageFilterArray.append(imgFilter)
-        
-        imgControlView.tag = imgFilter.id
-        self.imageControlViewArray.append(imgControlView)
-        
-        self.lfView.addSubview(imgControlView)
-        self.updateImageFilter(self.imageFilterArray)
-        
-        self.hideImageControlView(id: imgFilter.id, delay: 1.0)
-    }
-    
-    func changeDataToImageArray(data: Data) -> [UIImage]? {
-        print(data)
-        
-        let gifOptions = [
-            kCGImageSourceShouldAllowFloat as String: true as NSNumber,
-            kCGImageSourceCreateThumbnailWithTransform as String: true as NSNumber,
-            kCGImageSourceCreateThumbnailFromImageAlways as String: true as NSNumber
-        ] as CFDictionary
-        
-        guard let imageSource = CGImageSourceCreateWithData(data as CFData, gifOptions) else {
-            debugPrint("Cannot create image source with data!")
-            return nil
-        }
-        
-        let framesCount = CGImageSourceGetCount(imageSource)
-        var frameList = [UIImage]()
-        
-        for index in 0 ..< framesCount {
-            if let cgImageRef = CGImageSourceCreateImageAtIndex(imageSource, index, nil) {
-                let uiImageRef = UIImage(cgImage: cgImageRef)
-                frameList.append(uiImageRef)
-            }
-        }
-        
-        return frameList
-    }
 }
 
 extension LiveViewController: PHPickerViewControllerDelegate {
@@ -529,7 +528,7 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                     guard let self = self else { return }
                     guard let data = data else { return }
                     
-                    guard let imageArray = self.changeDataToImageArray(data: data) else { return }
+                    guard let imageArray = self.viewModel.changeDataToImageArray(data: data) else { return }
                     DispatchQueue.main.async { [unowned self] in
                         self.publishImageFilter(imageArray)
                     }

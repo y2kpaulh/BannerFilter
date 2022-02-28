@@ -328,7 +328,14 @@
 		2EAEDE1727858B900020D693 /* StreamingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1627858B900020D693 /* StreamingViewModel.swift */; };
 		2EAEDE1827858B940020D693 /* StreamingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1627858B900020D693 /* StreamingViewModel.swift */; };
 		2EAEDE1927859ED10020D693 /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291468161E581C7D00E619BA /* Preference.swift */; };
-		2EFCED0027BBA9030077AFA1 /* ImageControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */; };
+		2EB5196927CCAB8F004F5CC1 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196827CCAB8F004F5CC1 /* UIView+Extension.swift */; };
+		2EB5196C27CCABA2004F5CC1 /* ImageFilterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */; };
+		2EB5197227CCABAE004F5CC1 /* ImageSizeControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */; };
+		2EB5197327CCABAE004F5CC1 /* ImageFilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */; };
+		2EB5197427CCABAE004F5CC1 /* ImageFilterMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */; };
+		2EB5197527CCABAE004F5CC1 /* ImageControlCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5197027CCABAE004F5CC1 /* ImageControlCloseButton.swift */; };
+		2EB5197627CCABAE004F5CC1 /* ImageFilterControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5197127CCABAE004F5CC1 /* ImageFilterControlView.swift */; };
+		2EB5197927CCAD2A004F5CC1 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5197827CCAD2A004F5CC1 /* ViewModel.swift */; };
 		BC0D236D26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
 		BC0D236E26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
 		BC0D236F26331BAB001DDA0C /* NetSocket.CircularBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */; };
@@ -848,7 +855,14 @@
 		2EAEDE0D2785710F0020D693 /* doolie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = doolie.gif; sourceTree = "<group>"; };
 		2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTHKSwiftUiView.swift; sourceTree = "<group>"; };
 		2EAEDE1627858B900020D693 /* StreamingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingViewModel.swift; sourceTree = "<group>"; };
-		2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageControlView.swift; sourceTree = "<group>"; };
+		2EB5196827CCAB8F004F5CC1 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterModel.swift; sourceTree = "<group>"; };
+		2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSizeControlView.swift; sourceTree = "<group>"; };
+		2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterMenuView.swift; sourceTree = "<group>"; };
+		2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageFilterMenuView.xib; sourceTree = "<group>"; };
+		2EB5197027CCABAE004F5CC1 /* ImageControlCloseButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageControlCloseButton.swift; sourceTree = "<group>"; };
+		2EB5197127CCABAE004F5CC1 /* ImageFilterControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterControlView.swift; sourceTree = "<group>"; };
+		2EB5197827CCAD2A004F5CC1 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		BC0D236C26331BAB001DDA0C /* NetSocket.CircularBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetSocket.CircularBuffer.swift; sourceTree = "<group>"; };
 		BC20DF2B2503747E007BC608 /* HKPictureInPictureControllerPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKPictureInPictureControllerPosition.swift; sourceTree = "<group>"; };
 		BC20DF33250374EA007BC608 /* HKPictureInPictureController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKPictureInPictureController+Extension.swift"; sourceTree = "<group>"; };
@@ -1282,6 +1296,7 @@
 		2968973F1CDB01AD0074D5F0 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				2EB5196727CCAB7A004F5CC1 /* ImageFilter */,
 				296897431CDB01D20074D5F0 /* Info.plist */,
 				291F4E361CF206E200F59C51 /* Icon.png */,
 				2EAEDE0D2785710F0020D693 /* doolie.gif */,
@@ -1290,6 +1305,7 @@
 				296897411CDB01D20074D5F0 /* AppDelegate.swift */,
 				2E435E6027980CD900A75298 /* UIControl+Combine.swift */,
 				296897441CDB01D20074D5F0 /* LiveViewController.swift */,
+				2EB5197827CCAD2A004F5CC1 /* ViewModel.swift */,
 				2E435E8427A0E30800A75298 /* BannerSettingsView.xib */,
 				2E435E8627A0E31E00A75298 /* BannerSettingsView.swift */,
 				BCFB355924FA40DD00DC5108 /* PlaybackContainerViewController.swift */,
@@ -1297,8 +1313,8 @@
 				291468161E581C7D00E619BA /* Preference.swift */,
 				2950742E1E4620B7007F15A4 /* PreferenceViewController.swift */,
 				296897461CDB01D20074D5F0 /* VisualEffect.swift */,
-				2EFCECFF27BBA9030077AFA1 /* ImageControlView.swift */,
 				2EA6AF8C27BDD71800947201 /* UIImage+Extensions.swift */,
+				2EB5196827CCAB8F004F5CC1 /* UIView+Extension.swift */,
 				296897421CDB01D20074D5F0 /* Assets.xcassets */,
 				2968974D1CDB01DD0074D5F0 /* LaunchScreen.storyboard */,
 				29A39C801D85BEFA007C27E9 /* Screencast */,
@@ -1460,6 +1476,35 @@
 				BC83A4722403D83B006BDE06 /* VTCompressionSession+Extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		2EB5196727CCAB7A004F5CC1 /* ImageFilter */ = {
+			isa = PBXGroup;
+			children = (
+				2EB5196A27CCAB96004F5CC1 /* Model */,
+				2EB5197727CCABB2004F5CC1 /* View */,
+			);
+			path = ImageFilter;
+			sourceTree = "<group>";
+		};
+		2EB5196A27CCAB96004F5CC1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2EB5197727CCABB2004F5CC1 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2EB5197027CCABAE004F5CC1 /* ImageControlCloseButton.swift */,
+				2EB5197127CCABAE004F5CC1 /* ImageFilterControlView.swift */,
+				2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */,
+				2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */,
+				2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		BC20DF2A25037454007BC608 /* PiP */ = {
@@ -1910,6 +1955,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E435E8527A0E30800A75298 /* BannerSettingsView.xib in Resources */,
+				2EB5197427CCABAE004F5CC1 /* ImageFilterMenuView.xib in Resources */,
 				2EAEDE112785710F0020D693 /* doolie.gif in Resources */,
 				291F4E381CF206E600F59C51 /* Icon.png in Resources */,
 				296897651CDB028C0074D5F0 /* Assets.xcassets in Resources */,
@@ -2338,6 +2384,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				291468191E581C8F00E619BA /* Preference.swift in Sources */,
+				2EB5196927CCAB8F004F5CC1 /* UIView+Extension.swift in Sources */,
+				2EB5197227CCABAE004F5CC1 /* ImageSizeControlView.swift in Sources */,
 				2E435E6127980CD900A75298 /* UIControl+Combine.swift in Sources */,
 				2E435E8727A0E31E00A75298 /* BannerSettingsView.swift in Sources */,
 				2EA6AF8D27BDD71800947201 /* UIImage+Extensions.swift in Sources */,
@@ -2345,8 +2393,12 @@
 				296897671CDB02940074D5F0 /* AppDelegate.swift in Sources */,
 				296897681CDB02940074D5F0 /* LiveViewController.swift in Sources */,
 				BCFB355524FA27EA00DC5108 /* PlaybackViewController.swift in Sources */,
+				2EB5197927CCAD2A004F5CC1 /* ViewModel.swift in Sources */,
+				2EB5196C27CCABA2004F5CC1 /* ImageFilterModel.swift in Sources */,
 				2EAEDE1727858B900020D693 /* StreamingViewModel.swift in Sources */,
-				2EFCED0027BBA9030077AFA1 /* ImageControlView.swift in Sources */,
+				2EB5197527CCABAE004F5CC1 /* ImageControlCloseButton.swift in Sources */,
+				2EB5197627CCABAE004F5CC1 /* ImageFilterControlView.swift in Sources */,
+				2EB5197327CCABAE004F5CC1 /* ImageFilterMenuView.swift in Sources */,
 				2955F51F1D09EBAD004CC995 /* VisualEffect.swift in Sources */,
 				295074311E462105007F15A4 /* PreferenceViewController.swift in Sources */,
 			);

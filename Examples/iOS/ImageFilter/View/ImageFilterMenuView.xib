@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ImageFilterMenuView" customModule="Example_iOS" customModuleProvider="target">
+            <connections>
+                <outlet property="addBtn" destination="aQH-hW-A2n" id="pvi-E8-7CQ"/>
+                <outlet property="cancelBtn" destination="hcp-7G-5n4" id="PTu-S6-oNe"/>
+                <outlet property="okBtn" destination="EMz-hC-N1k" id="Yn8-OG-fjU"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcp-7G-5n4" userLabel="CancelButton">
+                    <rect key="frame" x="4" y="589" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="BZv-Od-F1O"/>
+                        <constraint firstAttribute="height" constant="60" id="GOE-Gn-r6P"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title="취소">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8zh-TV-c6A" userLabel="AddButtonBgView">
+                    <rect key="frame" x="152" y="601" width="71" height="36"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LpJ-d5-au8" userLabel="WhiteBorder">
+                            <rect key="frame" x="0.0" y="0.0" width="71" height="36"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="18"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <view alpha="0.20000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F1H-Zg-qoG" userLabel="Blur">
+                            <rect key="frame" x="1" y="1" width="69" height="34"/>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="18"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQH-hW-A2n" userLabel="AddButton">
+                            <rect key="frame" x="0.0" y="0.0" width="71" height="36"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="+ 추가">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="aQH-hW-A2n" secondAttribute="trailing" id="1Nk-r6-0Nk"/>
+                        <constraint firstAttribute="trailing" secondItem="LpJ-d5-au8" secondAttribute="trailing" id="4qr-PW-dUL"/>
+                        <constraint firstAttribute="height" constant="36" id="B9u-fo-9cm"/>
+                        <constraint firstItem="F1H-Zg-qoG" firstAttribute="leading" secondItem="8zh-TV-c6A" secondAttribute="leading" constant="1" id="GOK-TO-XaP"/>
+                        <constraint firstItem="aQH-hW-A2n" firstAttribute="top" secondItem="8zh-TV-c6A" secondAttribute="top" id="GQ7-Y2-qSu"/>
+                        <constraint firstAttribute="bottom" secondItem="aQH-hW-A2n" secondAttribute="bottom" id="GWp-6M-Mzr"/>
+                        <constraint firstAttribute="bottom" secondItem="LpJ-d5-au8" secondAttribute="bottom" id="HLQ-1R-yU9"/>
+                        <constraint firstItem="LpJ-d5-au8" firstAttribute="top" secondItem="8zh-TV-c6A" secondAttribute="top" id="JBA-qP-3PZ"/>
+                        <constraint firstAttribute="trailing" secondItem="F1H-Zg-qoG" secondAttribute="trailing" constant="1" id="Xf8-5F-bFT"/>
+                        <constraint firstItem="aQH-hW-A2n" firstAttribute="leading" secondItem="8zh-TV-c6A" secondAttribute="leading" id="hiR-MS-ASQ"/>
+                        <constraint firstAttribute="width" constant="71" id="koy-RI-sew"/>
+                        <constraint firstItem="F1H-Zg-qoG" firstAttribute="top" secondItem="8zh-TV-c6A" secondAttribute="top" constant="1" id="kzh-fq-x4f"/>
+                        <constraint firstItem="LpJ-d5-au8" firstAttribute="leading" secondItem="8zh-TV-c6A" secondAttribute="leading" id="rIc-Vm-Bry"/>
+                        <constraint firstAttribute="bottom" secondItem="F1H-Zg-qoG" secondAttribute="bottom" constant="1" id="xB1-9l-mJp"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EMz-hC-N1k" userLabel="OkButton">
+                    <rect key="frame" x="311" y="589" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="Tuo-fU-pYK"/>
+                        <constraint firstAttribute="height" constant="60" id="so3-bV-bSd"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title="확인">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                </button>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradationBgBottom" translatesAutoresizingMaskIntoConstraints="NO" id="cH6-YZ-XgB">
+                    <rect key="frame" x="0.0" y="267" width="375" height="400"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="400" id="YMe-Ss-LzI"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="EMz-hC-N1k" secondAttribute="trailing" constant="4" id="0Bm-AF-9Vo"/>
+                <constraint firstItem="8zh-TV-c6A" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="1FU-Bj-bgW"/>
+                <constraint firstItem="cH6-YZ-XgB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="2Zn-me-NNS"/>
+                <constraint firstItem="EMz-hC-N1k" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="AUa-lh-DBz"/>
+                <constraint firstAttribute="bottom" secondItem="cH6-YZ-XgB" secondAttribute="bottom" id="Jkt-ye-ewP"/>
+                <constraint firstAttribute="bottom" secondItem="8zh-TV-c6A" secondAttribute="bottom" constant="30" id="S3x-Tm-YuI"/>
+                <constraint firstItem="hcp-7G-5n4" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="VEz-vb-vkv"/>
+                <constraint firstAttribute="trailing" secondItem="cH6-YZ-XgB" secondAttribute="trailing" id="X7J-ZJ-Pou"/>
+                <constraint firstItem="hcp-7G-5n4" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="ujf-Wx-5Qd"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="176.08695652173915" y="149.66517857142856"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="gradationBgBottom" width="360" height="400"/>
+    </resources>
+</document>

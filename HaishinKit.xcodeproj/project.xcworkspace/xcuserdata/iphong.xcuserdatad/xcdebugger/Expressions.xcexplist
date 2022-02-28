@@ -31,6 +31,14 @@
          contextName = "MTHKSwiftUiView.updateUIView(_:context:):MTHKSwiftUiView.swift">
       </ContextState>
       <ContextState
+         contextName = "LiveViewController.publishImageFilter(_:):LiveViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentResolution">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "closure #1 in LiveViewController.bannerPositionMenu(imageArray:):LiveViewController.swift">
          <PersistentStrings>
             <PersistentString
