@@ -395,32 +395,32 @@ extension LiveViewController {
         let imageInfo = ImageInfo(size: image.size,
                                   ratio: max(image.size.width, image.size.height))
         
-        var scaledSize = CGSize(width: image.size.width,
+        var publishSize = CGSize(width: image.size.width,
                                      height: image.size.height)
         
-        var publishSize = CGSize(
-            width: scaledSize.width * publishSizeRatio.width,
-            height: scaledSize.height * publishSizeRatio.height)
+        var scaledSize = CGSize(
+            width: publishSize.width * publishSizeRatio.width,
+            height: publishSize.height * publishSizeRatio.height)
         
-        if scaledSize.width > currentResolution.width * 0.9 {
+        if publishSize.width > currentResolution.width * 0.9 {
             let maxLength = currentResolution.width * 0.9
             let scaleFactor = maxLength / imageInfo.ratio
             
-            scaledSize = CGSize(width: scaledSize.width * scaleFactor,
-                                     height: scaledSize.height * scaleFactor)
-            publishSize = CGSize(
-                width: scaledSize.width * publishSizeRatio.width,
-                height: scaledSize.height * publishSizeRatio.height)
+            publishSize = CGSize(width: publishSize.width * scaleFactor,
+                                     height: publishSize.height * scaleFactor)
+            scaledSize = CGSize(
+                width: publishSize.width * publishSizeRatio.width,
+                height: publishSize.height * publishSizeRatio.height)
         }
         
-        let scaledRect = CGRect(origin: CGPoint(x: (currentResolution.width/2) - (scaledSize.width/2) , y: (currentResolution.height/2) - (scaledSize.height/2)), size: scaledSize)
+        let publishRect = CGRect(origin: CGPoint(x: (currentResolution.width/2) - (publishSize.width/2) , y: (currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
         
-        print("scaledRect", scaledRect)
-        let imgFilter: ImageFilter = ImageFilter(rect: scaledRect, imageArray: imageArray, info: imageInfo)
+        print("publishRect", publishRect)
+        let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
         
-        let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: publishSize))
+        let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: scaledSize))
         controlView.center = self.view.center
-        // let publishRect = controlView.center
+       
         controlView.tag = imgFilter.id
 
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
