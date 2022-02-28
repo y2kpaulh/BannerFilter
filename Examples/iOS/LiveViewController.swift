@@ -402,8 +402,8 @@ extension LiveViewController {
             width: scaledSize.width * publishSizeRatio.width,
             height: scaledSize.height * publishSizeRatio.height)
         
-        if publishSize.width > currentResolution.width * 0.7 {
-            let maxLength = currentResolution.width * 0.7
+        if scaledSize.width > currentResolution.width * 0.9 {
+            let maxLength = currentResolution.width * 0.9
             let scaleFactor = maxLength / imageInfo.ratio
             
             scaledSize = CGSize(width: scaledSize.width * scaleFactor,
