@@ -395,30 +395,34 @@ extension LiveViewController {
         let imageInfo = ImageInfo(size: image.size,
                                   ratio: max(image.size.width, image.size.height))
         
-        var scaledImageSize = CGSize(width: image.size.width,
+        var scaledSize = CGSize(width: image.size.width,
                                      height: image.size.height)
         
         var publishSize = CGSize(
-            width: scaledImageSize.width * publishSizeRatio.width,
-            height: scaledImageSize.height * publishSizeRatio.height)
+            width: scaledSize.width * publishSizeRatio.width,
+            height: scaledSize.height * publishSizeRatio.height)
         
-        if image.size.width > currentResolution.width * 0.8 {
-            let maxLength = currentResolution.width * 0.8
+        if publishSize.width > currentResolution.width * 0.7 {
+            let maxLength = currentResolution.width * 0.7
             let scaleFactor = maxLength / imageInfo.ratio
             
-            scaledImageSize = CGSize(width: scaledImageSize.width * scaleFactor,
-                                     height: scaledImageSize.height * scaleFactor)
+            scaledSize = CGSize(width: scaledSize.width * scaleFactor,
+                                     height: scaledSize.height * scaleFactor)
             publishSize = CGSize(
-                width: scaledImageSize.width * publishSizeRatio.width,
-                height: scaledImageSize.height * publishSizeRatio.height)
+                width: scaledSize.width * publishSizeRatio.width,
+                height: scaledSize.height * publishSizeRatio.height)
         }
+        
+        let scaledRect = CGRect(origin: CGPoint(x: (currentResolution.width/2) - (scaledSize.width/2) , y: (currentResolution.height/2) - (scaledSize.height/2)), size: scaledSize)
+        
+        print("scaledRect", scaledRect)
+        let imgFilter: ImageFilter = ImageFilter(rect: scaledRect, imageArray: imageArray, info: imageInfo)
         
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: publishSize))
         controlView.center = self.view.center
-        
-        let imgFilter: ImageFilter = ImageFilter(rect: controlView.frame, imageArray: imageArray, info: imageInfo)
+        // let publishRect = controlView.center
         controlView.tag = imgFilter.id
-        
+
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
         sizeControlView.tag = imgFilter.id
@@ -505,13 +509,15 @@ extension LiveViewController {
         //            .store(in: &self.cancelBag)
         //
         
-        self.viewModel.imageFilter.append(filterData)
+        self.viewModel.filterData.append(filterData)
         
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
    
-        //        self.updateImageFilter(self.imageFilterArray)
+        self.updateImageFilter(self.viewModel.filterData.map({
+           return $0.filter
+        }))
     }
 
 }

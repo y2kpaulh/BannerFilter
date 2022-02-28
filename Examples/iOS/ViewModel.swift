@@ -10,7 +10,7 @@ import UIKit
 import PhotosUI
 
 class ViewModel {
-    var imageFilter = [ImageFilterData]()
+    var filterData = [ImageFilterData]()
     
     func configPhotosUI() {
         let requiredAccessLevel: PHAccessLevel = .readWrite

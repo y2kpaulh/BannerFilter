@@ -176,7 +176,6 @@ final class ImageFilterEffect: VideoEffect {
         self.filterLayer = layer
         self.layerCount = self.filterLayer.count
         self.currIndexArray = [Int](repeating: 0, count: self.layerCount)
-        
     }
     
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
@@ -205,6 +204,7 @@ final class ImageFilterEffect: VideoEffect {
 //                targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
 //            }
             
+            print("layer.rect",layer.rect)
             targetImage = targetImage.resize(targetSize: layer.rect.size)
 
             targetImage.draw(at: layer.rect.origin)
