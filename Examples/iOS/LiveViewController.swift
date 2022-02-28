@@ -427,7 +427,7 @@ extension LiveViewController {
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
         sizeControlView.tag = imgFilter.id
         
-        let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 100, y: 100), size: CGSize(width: 30, height: 30)))
+        let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         closeBtn.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.origin.y + 5)
         closeBtn.tag = imgFilter.id
         
