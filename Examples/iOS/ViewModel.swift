@@ -14,7 +14,7 @@ class ViewModel {
     var screenRatio: CGSize {
         return CGSize(width: currentResolution.width/UIScreen.main.bounds.width, height: currentResolution.height/UIScreen.main.bounds.height)
     }
-    var filterData = [ImageFilterData]()
+    var filterList = [ImageFilterData]()
     
     func configPhotosUI() {
         let requiredAccessLevel: PHAccessLevel = .readWrite

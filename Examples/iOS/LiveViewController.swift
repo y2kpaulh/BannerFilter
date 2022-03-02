@@ -386,7 +386,7 @@ extension LiveViewController {
         return { [unowned self] (viewId, changeFrame) in
             print("panchEvent", viewId, changeFrame)
             
-            let changeIndex = self.viewModel.filterData
+            let changeIndex = self.viewModel.filterList
                 .map{ $0.filter }
                 .firstIndex{ $0.id == viewId }!
             
@@ -400,20 +400,20 @@ extension LiveViewController {
             
             let publishRect = CGRect(origin: publishPoint, size: publishSize)
             
-            var imgFilter = self.viewModel.filterData[changeIndex].filter
+            var imgFilter = self.viewModel.filterList[changeIndex].filter
             imgFilter.rect = publishRect
             
-            self.viewModel.filterData[changeIndex].filter = imgFilter
+            self.viewModel.filterList[changeIndex].filter = imgFilter
             
             // publish image
-            self.updateImageFilter(self.viewModel.filterData
+            self.updateImageFilter(self.viewModel.filterList
                                     .map{ $0.filter })
             
             // update control view position
             UIView.animate(withDuration: 0.1) { [weak self] in
                 guard let self = self else { return }
-                self.viewModel.filterData[changeIndex].menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.maxY - 5)
-                self.viewModel.filterData[changeIndex].menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.origin.y + 5)
+                self.viewModel.filterList[changeIndex].menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.maxY - 5)
+                self.viewModel.filterList[changeIndex].menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.origin.y + 5)
             }
         }
     }
@@ -470,7 +470,7 @@ extension LiveViewController {
             .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint, translation) in
                 print("dragEvent", viewId, beginPoint, endPoint, translation)
                 
-                let changeIndex = self.viewModel.filterData.firstIndex {
+                let changeIndex = self.viewModel.filterList.firstIndex {
                     $0.filter.id == viewId
                 }!
                 
@@ -484,7 +484,7 @@ extension LiveViewController {
                 let bottomTrailingPoint = CGPoint(x: filterData.menu.sizeControl.center.x + translation.x,
                                                   y: filterData.menu.sizeControl.center.y + translation.y)
                 
-                var filterData = self.viewModel.filterData[changeIndex]
+                var filterData = self.viewModel.filterList[changeIndex]
 
                 let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
                                                    filterData: filterData,
@@ -502,9 +502,9 @@ extension LiveViewController {
                 let publishRect = CGRect(origin: publishPoint, size: publishSize)
                 
                 filterData.filter.rect = publishRect
-                self.viewModel.filterData[changeIndex] = filterData
+                self.viewModel.filterList[changeIndex] = filterData
 
-                self.updateImageFilter(self.viewModel.filterData.map({
+                self.updateImageFilter(self.viewModel.filterList.map({
                     return $0.filter
                 }))
                 
@@ -550,13 +550,13 @@ extension LiveViewController {
             })
             .store(in: &self.cancelBag)
         
-        self.viewModel.filterData.append(filterData)
+        self.viewModel.filterList.append(filterData)
         
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
         
-        self.updateImageFilter(self.viewModel.filterData.map({
+        self.updateImageFilter(self.viewModel.filterList.map({
             return $0.filter
         }))
     }
