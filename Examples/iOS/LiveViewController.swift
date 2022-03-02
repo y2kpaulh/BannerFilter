@@ -384,11 +384,10 @@ extension LiveViewController {
     
     fileprivate func updatePosition() -> (Int, CGRect) -> Void {
         return { [unowned self] (viewId, changeFrame) in
-            print("panchEvent", viewId, changeFrame)
             
-            let changeIndex = self.viewModel.filterList
-                .map{ $0.filter }
-                .firstIndex{ $0.id == viewId }!
+            let changeIndex = self.viewModel.filterList.firstIndex {
+                $0.filter.id == viewId
+            }!
             
             let publishPoint = CGPoint(
                 x: changeFrame.origin.x * self.viewModel.screenRatio.width,
@@ -495,30 +494,30 @@ extension LiveViewController {
                 
                 let lastCenterPos = filterData.menu.controlView.center
                 
-                let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
-                                         height: resultRect.size.height/publishSizeRatio.height)
-                
                 filterData.menu.controlView.frame = resultRect
                 filterData.menu.controlView.center = lastCenterPos
+                
+                let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
+                                         height: resultRect.size.height/publishSizeRatio.height)
+                                
+                let publishPoint = CGPoint(
+                    x: filterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
+                    y: filterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
+               
+                let publishRect = CGRect(origin: publishPoint, size: publishSize)
+                
+                filterData.filter.rect = publishRect
+                self.viewModel.filterList[changeIndex] = filterData
 
+                self.updateImageFilter(self.viewModel.filterList.map({
+                    return $0.filter
+                }))
+                
                 UIView.animate(withDuration: 0.1) {
                     filterData.menu.sizeControl.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.maxY - 5)
                     filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.origin.y + 5)
-                    
-                    let publishPoint = CGPoint(
-                        x: filterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
-                        y: filterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
-                   
-                    let publishRect = CGRect(origin: publishPoint, size: publishSize)
-                    
-                    filterData.filter.rect = publishRect
-                    self.viewModel.filterList[changeIndex] = filterData
-
-                    self.updateImageFilter(self.viewModel.filterList.map({
-                        return $0.filter
-                    }))
                 }
             })
             .store(in: &self.cancelBag)
