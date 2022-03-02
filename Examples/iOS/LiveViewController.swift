@@ -99,14 +99,14 @@ final class LiveViewController: UIViewController {
     }
     
     @IBAction func tapAddBannerBtn(_ sender: Any) {
-        filterMenuView = ImageFilterMenuView(frame: self.view.frame)
-        filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
-        self.view.addSubview(filterMenuView)
+        self.filterMenuView = ImageFilterMenuView(frame: self.view.frame)
+        self.filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
+        self.view.addSubview(self.filterMenuView)
         
         for filterData in self.viewModel.filterList {
-            filterMenuView.addSubview(filterData.menu.controlView)
-            filterMenuView.addSubview(filterData.menu.sizeControl)
-            filterMenuView.addSubview(filterData.menu.closeButton)
+            self.filterMenuView.addSubview(filterData.menu.controlView)
+            self.filterMenuView.addSubview(filterData.menu.sizeControl)
+            self.filterMenuView.addSubview(filterData.menu.closeButton)
         }
     }
     
