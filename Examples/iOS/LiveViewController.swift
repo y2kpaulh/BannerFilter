@@ -27,7 +27,7 @@ final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
 
 final class LiveViewController: UIViewController {
     private static let maxRetryCount: Int = 5
-
+    
     @IBOutlet private weak var lfView: MTHKView!
     @IBOutlet private weak var currentFPSLabel: UILabel!
     @IBOutlet private weak var publishButton: UIButton!
@@ -101,12 +101,16 @@ final class LiveViewController: UIViewController {
     @IBAction func tapAddBannerBtn(_ sender: Any) {
         self.filterMenuView = ImageFilterMenuView(frame: self.view.frame)
         self.filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
-        self.view.addSubview(self.filterMenuView)
+        self.filterMenuView.okBtn.addTarget(self, action: #selector(tapfilerMenuOkBtn), for: .touchUpInside)
         
-        for filterData in self.viewModel.filterList {
-            self.filterMenuView.addSubview(filterData.menu.controlView)
-            self.filterMenuView.addSubview(filterData.menu.sizeControl)
-            self.filterMenuView.addSubview(filterData.menu.closeButton)
+        UIView.animate(withDuration: 0.1) {
+            self.view.addSubview(self.filterMenuView)
+            
+            for filterData in self.viewModel.filterList {
+                self.filterMenuView.addSubview(filterData.menu.controlView)
+                self.filterMenuView.addSubview(filterData.menu.sizeControl)
+                self.filterMenuView.addSubview(filterData.menu.closeButton)
+            }
         }
     }
     
@@ -190,6 +194,16 @@ final class LiveViewController: UIViewController {
     
     @IBAction func buttonDidTap(_ sender: Any) {
         //selectBanner()
+    }
+    
+    @objc func tapfilerMenuOkBtn(_ sender: Any) {
+        print("tapfilerMenuOkBtn")
+        UIView.animate(withDuration: 0.5) {
+            self.filterMenuView.removeFromSuperview()
+            self.updateImageFilter(self.viewModel.filterList.map({
+                return $0.filter
+            }))
+        }
     }
     
     @objc func selectPhotos() {
@@ -337,8 +351,8 @@ extension LiveViewController {
                                                              y: changeFrame.origin.y + 5)
                 
                 self.viewModel.filterList[changeIndex] = filterData
-//                self.updateImageFilter(self.viewModel.filterList
-//                                        .map{ $0.filter })
+                //                self.updateImageFilter(self.viewModel.filterList
+                //                                        .map{ $0.filter })
             }
         }
     }
@@ -368,7 +382,7 @@ extension LiveViewController {
         }
         
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
-       
+        
         controlView.center = self.view.center
         
         if imageArray.count > 0 {
@@ -387,13 +401,13 @@ extension LiveViewController {
         //first position
         //screen center position
         let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
-                
+        
         let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
         
         controlView.tag = imgFilter.id
         sizeControlView.tag = imgFilter.id
         closeBtn.tag = imgFilter.id
-
+        
         let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
         let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
         
@@ -406,21 +420,21 @@ extension LiveViewController {
                 }!
                 
                 let resizeCondition = self.viewModel.isResizeTargetView(beginPoint: beginPoint,
-                                                         endPoint: endPoint)
+                                                                        endPoint: endPoint)
                 
                 guard resizeCondition != .none else { return }
                 
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
-                                
+                
                 let bottomTrailingPoint = CGPoint(x: filterData.menu.sizeControl.center.x + translation.x,
                                                   y: filterData.menu.sizeControl.center.y + translation.y)
                 
                 var filterData = self.viewModel.filterList[changeIndex]
-
+                
                 let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
-                                                   filterData: filterData,
-                                                   resizeValue: resizeValue,
-                                                   bottomTrailingPoint: bottomTrailingPoint)
+                                                                  filterData: filterData,
+                                                                  resizeValue: resizeValue,
+                                                                  bottomTrailingPoint: bottomTrailingPoint)
                 
                 let lastCenterPos = filterData.menu.controlView.center
                 
@@ -429,27 +443,27 @@ extension LiveViewController {
                 
                 let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
                                          height: resultRect.size.height/publishSizeRatio.height)
-                                
+                
                 let publishPoint = CGPoint(
                     x: filterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
                     y: filterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
-               
+                
                 let publishRect = CGRect(origin: publishPoint, size: publishSize)
                 
                 filterData.filter.rect = publishRect
                 
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
-                   
+                    
                     filterData.menu.sizeControl.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.maxY - 5)
                     filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.origin.y + 5)
                     
                     self.viewModel.filterList[changeIndex] = filterData
-//                    self.updateImageFilter(self.viewModel.filterList.map({
-//                        return $0.filter
-//                    }))
+                    //                    self.updateImageFilter(self.viewModel.filterList.map({
+                    //                        return $0.filter
+                    //                    }))
                 }
             })
             .store(in: &self.cancelBag)
@@ -490,23 +504,23 @@ extension LiveViewController {
                         
                         self.viewModel.filterList.remove(at: changeIndex)
                         
-//                        self.updateImageFilter(self.viewModel.filterList.map({
-//                            return $0.filter
-//                        }))
+                        //                        self.updateImageFilter(self.viewModel.filterList.map({
+                        //                            return $0.filter
+                        //                        }))
                     }
                 }
             })
             .store(in: &self.cancelBag)
-            
+        
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
         
         self.viewModel.filterList.append(filterData)
         
-//        self.updateImageFilter(self.viewModel.filterList.map({
-//            return $0.filter
-//        }))
+        //        self.updateImageFilter(self.viewModel.filterList.map({
+        //            return $0.filter
+        //        }))
     }
 }
 
