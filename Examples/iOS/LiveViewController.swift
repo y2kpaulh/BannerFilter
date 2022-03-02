@@ -442,27 +442,25 @@ extension LiveViewController {
                 height: publishSize.height * publishSizeRatio.height)
         }
         
-        //first position
-        //screen center position
-        let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
-        
-        print("publishRect", publishRect)
-        
-        let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
-        
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
         controlView.center = self.view.center
         
-        controlView.tag = imgFilter.id
-        
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
-        sizeControlView.tag = imgFilter.id
         
         let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         closeBtn.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.origin.y + 5)
-        closeBtn.tag = imgFilter.id
         
+        //first position
+        //screen center position
+        let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
+                
+        let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
+        
+        controlView.tag = imgFilter.id
+        sizeControlView.tag = imgFilter.id
+        closeBtn.tag = imgFilter.id
+
         let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
         let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
         
@@ -519,7 +517,6 @@ extension LiveViewController {
                     self.updateImageFilter(self.viewModel.filterList.map({
                         return $0.filter
                     }))
-
                 }
             })
             .store(in: &self.cancelBag)
@@ -542,25 +539,33 @@ extension LiveViewController {
             .sink(receiveValue: { [unowned self] (viewId) in
                 print("closeEvent", viewId)
                 
-                //                DispatchQueue.main.async() {
-                //                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
-                //                        self.imageFilterArray.remove(at: searchIndex)
-                //                        UIView.animate(withDuration: 0.5) {
-                //                            self.imageControlViewArray[searchIndex].removeFromSuperview()
-                //                        }
-                //                        self.imageControlViewArray.remove(at: searchIndex)
-                //
-                //                        self.updateImageFilter(self.imageFilterArray)
-                //                    }
-                //                }
+                let changeIndex = self.viewModel.filterList.firstIndex {
+                    $0.filter.id == viewId
+                }!
+                
+                let filterMenu = self.viewModel.filterList[changeIndex].menu
+                
+                DispatchQueue.main.async() {
+                    UIView.animate(withDuration: 0.1) {
+                        filterMenu.controlView.removeFromSuperview()
+                        filterMenu.sizeControl.removeFromSuperview()
+                        filterMenu.closeButton.removeFromSuperview()
+                        
+                        self.viewModel.filterList.remove(at: changeIndex)
+                        
+                        self.updateImageFilter(self.viewModel.filterList.map({
+                            return $0.filter
+                        }))
+                    }
+                }
             })
             .store(in: &self.cancelBag)
-        
-        self.viewModel.filterList.append(filterData)
-        
+            
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
+        
+        self.viewModel.filterList.append(filterData)
         
         self.updateImageFilter(self.viewModel.filterList.map({
             return $0.filter
