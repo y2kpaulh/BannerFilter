@@ -321,40 +321,25 @@ extension LiveViewController {
         _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
     }
     
-    fileprivate func updatePosition() -> (Int, CGRect) -> Void {
-        return { [unowned self] (viewId, changeFrame) in
-            
-            let changeIndex = self.viewModel.filterList.firstIndex {
-                $0.filter.id == viewId
-            }!
-            
-            let publishPoint = CGPoint(
-                x: changeFrame.origin.x * self.viewModel.screenRatio.width,
-                y: changeFrame.origin.y * self.viewModel.screenRatio.height)
-            
-            let publishSize = CGSize(
-                width: changeFrame.size.width * self.viewModel.screenRatio.width,
-                height: changeFrame.size.height * self.viewModel.screenRatio.height)
-            
-            let publishRect = CGRect(origin: publishPoint, size: publishSize)
-            
-            var filterData = self.viewModel.filterList[changeIndex]
-            filterData.filter.rect = publishRect
-            
-            // update control view position
-            UIView.animate(withDuration: 0.1) { [weak self] in
-                guard let self = self else { return }
-                
-                filterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
-                                                             y: changeFrame.maxY - 5)
-                filterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
-                                                             y: changeFrame.origin.y + 5)
-                
-                self.viewModel.filterList[changeIndex] = filterData
-                //                self.updateImageFilter(self.viewModel.filterList
-                //                                        .map{ $0.filter })
-            }
-        }
+    fileprivate func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect, _ self: LiveViewController) {
+        let publishPoint = CGPoint(
+            x: changeFrame.origin.x * self.viewModel.screenRatio.width,
+            y: changeFrame.origin.y * self.viewModel.screenRatio.height)
+        
+        let publishSize = CGSize(
+            width: changeFrame.size.width * self.viewModel.screenRatio.width,
+            height: changeFrame.size.height * self.viewModel.screenRatio.height)
+        
+        let publishRect = CGRect(origin: publishPoint, size: publishSize)
+        
+        var filterData = self.viewModel.filterList[changeIndex]
+        filterData.filter.rect = publishRect
+        filterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
+                                                     y: changeFrame.maxY - 5)
+        filterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
+                                                     y: changeFrame.origin.y + 5)
+        
+        self.viewModel.filterList[changeIndex] = filterData
     }
     
     fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
@@ -437,10 +422,7 @@ extension LiveViewController {
                                                                   bottomTrailingPoint: bottomTrailingPoint)
                 
                 let lastCenterPos = filterData.menu.controlView.center
-                
-                filterData.menu.controlView.frame = resultRect
-                filterData.menu.controlView.center = lastCenterPos
-                
+                                
                 let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
                                          height: resultRect.size.height/publishSizeRatio.height)
                 
@@ -455,25 +437,67 @@ extension LiveViewController {
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
                     
-                    filterData.menu.sizeControl.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
-                                                                 y: filterData.menu.controlView.frame.maxY - 5)
+                    filterData.menu.controlView.frame = resultRect
+                    filterData.menu.controlView.center = lastCenterPos
+                    
+                    filterData.menu.sizeControl.center = CGPoint(x:filterData.menu.controlView.frame.maxX - 5,
+                                                                 y:filterData.menu.controlView.frame.maxY - 5)
                     filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.origin.y + 5)
                     
                     self.viewModel.filterList[changeIndex] = filterData
-                    //                    self.updateImageFilter(self.viewModel.filterList.map({
-                    //                        return $0.filter
-                    //                    }))
                 }
             })
             .store(in: &self.cancelBag)
         
         controlView.panEvent
-            .sink(receiveValue: updatePosition())
+            .sink(receiveValue: { [unowned self] (viewId, gesture) in
+                print("tapEvent", viewId, gesture)
+                let translation = gesture.translation(in: controlView)
+                
+                let changeIndex = self.viewModel.filterList.firstIndex {
+                    $0.filter.id == viewId
+                }!
+                
+                // update control view position
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    guard let self = self else { return }
+                    controlView.center = CGPoint(x: controlView.center.x + translation.x,
+                                                 y: controlView.center.y + translation.y)
+                    
+                    let changeFrame = controlView.frame
+                    
+                    updateFilterPosition(changeIndex, changeFrame, self)
+                }
+                
+                gesture.setTranslation(CGPoint.zero, in: controlView)
+            })
             .store(in: &self.cancelBag)
         
         controlView.pinchEvent
-            .sink(receiveValue: updatePosition())
+            .sink(receiveValue: { [unowned self] (viewId, gesture) in
+                print("tapEvent", viewId, gesture)
+                
+                let changeIndex = self.viewModel.filterList.firstIndex {
+                    $0.filter.id == viewId
+                }!
+                
+                // update control view position
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    guard let self = self else { return }
+                    
+                    controlView.transform = controlView.transform.scaledBy(
+                        x: gesture.scale,
+                        y: gesture.scale
+                    )
+                    
+                    gesture.scale = 1
+                    
+                    let changeFrame = controlView.frame
+                    
+                    updateFilterPosition(changeIndex, changeFrame, self)
+                }
+            })
             .store(in: &self.cancelBag)
         
         controlView.tapEvent
@@ -503,10 +527,6 @@ extension LiveViewController {
                         filterMenu.closeButton.removeFromSuperview()
                         
                         self.viewModel.filterList.remove(at: changeIndex)
-                        
-                        //                        self.updateImageFilter(self.viewModel.filterList.map({
-                        //                            return $0.filter
-                        //                        }))
                     }
                 }
             })
@@ -517,10 +537,6 @@ extension LiveViewController {
         self.filterMenuView.addSubview(closeBtn)
         
         self.viewModel.filterList.append(filterData)
-        
-        //        self.updateImageFilter(self.viewModel.filterList.map({
-        //            return $0.filter
-        //        }))
     }
 }
 

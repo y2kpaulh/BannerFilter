@@ -13,8 +13,8 @@ class ImageFilterControlView: UIImageView {
     var panGesture = UIPanGestureRecognizer()
     var pinchGesture = UIPinchGestureRecognizer()
     
-    var panEvent = PassthroughSubject<(Int, CGRect), Never>()
-    var pinchEvent = PassthroughSubject<(Int, CGRect), Never>()
+    var panEvent = PassthroughSubject<(Int, UIPanGestureRecognizer), Never>()
+    var pinchEvent = PassthroughSubject<(Int, UIPinchGestureRecognizer), Never>()
     var tapEvent = PassthroughSubject<Int, Never>()
     
     override init(frame: CGRect) {
@@ -47,7 +47,7 @@ class ImageFilterControlView: UIImageView {
     }
     
     @objc func panGestureEvent(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self)
+//        let translation = gesture.translation(in: self)
      
         //        let velocity = gesture.velocity(in: self)
         //        let speedThreshold:CGFloat = 300
@@ -69,30 +69,11 @@ class ImageFilterControlView: UIImageView {
         //            //그냥 지나가는게 아니니까 이미지 렌더 필요
         //            print(self.tag, "그냥 지나가는게 아니니까 이미지 렌더 필요")
         //        }
-        
-        UIView.animate(withDuration: 0.1) { [weak self] in
-            guard let self = self else { return }
-            self.center = CGPoint(x: self.center.x + translation.x,
-                                  y: self.center.y + translation.y)
-        }
-        
-        gesture.setTranslation(CGPoint.zero, in: self)
-        
-        self.panEvent.send((self.tag, self.frame))
+    
+        self.panEvent.send((self.tag, gesture))
     }
     
     @objc func pichGestureEvent(_ gesture: UIPinchGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-            return
-        }
-        
-        gestureView.transform = gestureView.transform.scaledBy(
-            x: gesture.scale,
-            y: gesture.scale
-        )
-        
-        gesture.scale = 1
-        
-        self.pinchEvent.send((self.tag, self.frame))
+        self.pinchEvent.send((self.tag, gesture))
     }
 }
