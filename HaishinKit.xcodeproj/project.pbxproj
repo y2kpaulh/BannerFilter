@@ -329,7 +329,7 @@
 		2EAEDE1827858B940020D693 /* StreamingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAEDE1627858B900020D693 /* StreamingViewModel.swift */; };
 		2EAEDE1927859ED10020D693 /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291468161E581C7D00E619BA /* Preference.swift */; };
 		2EB5196927CCAB8F004F5CC1 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196827CCAB8F004F5CC1 /* UIView+Extension.swift */; };
-		2EB5196C27CCABA2004F5CC1 /* ImageFilterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */; };
+		2EB5196C27CCABA2004F5CC1 /* ImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196B27CCABA2004F5CC1 /* ImageFilter.swift */; };
 		2EB5197227CCABAE004F5CC1 /* ImageSizeControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */; };
 		2EB5197327CCABAE004F5CC1 /* ImageFilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */; };
 		2EB5197427CCABAE004F5CC1 /* ImageFilterMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */; };
@@ -856,7 +856,7 @@
 		2EAEDE1227858AEA0020D693 /* MTHKSwiftUiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTHKSwiftUiView.swift; sourceTree = "<group>"; };
 		2EAEDE1627858B900020D693 /* StreamingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingViewModel.swift; sourceTree = "<group>"; };
 		2EB5196827CCAB8F004F5CC1 /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
-		2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterModel.swift; sourceTree = "<group>"; };
+		2EB5196B27CCABA2004F5CC1 /* ImageFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilter.swift; sourceTree = "<group>"; };
 		2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSizeControlView.swift; sourceTree = "<group>"; };
 		2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterMenuView.swift; sourceTree = "<group>"; };
 		2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageFilterMenuView.xib; sourceTree = "<group>"; };
@@ -1490,7 +1490,7 @@
 		2EB5196A27CCAB96004F5CC1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2EB5196B27CCABA2004F5CC1 /* ImageFilterModel.swift */,
+				2EB5196B27CCABA2004F5CC1 /* ImageFilter.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2394,7 +2394,7 @@
 				296897681CDB02940074D5F0 /* LiveViewController.swift in Sources */,
 				BCFB355524FA27EA00DC5108 /* PlaybackViewController.swift in Sources */,
 				2EB5197927CCAD2A004F5CC1 /* ViewModel.swift in Sources */,
-				2EB5196C27CCABA2004F5CC1 /* ImageFilterModel.swift in Sources */,
+				2EB5196C27CCABA2004F5CC1 /* ImageFilter.swift in Sources */,
 				2EAEDE1727858B900020D693 /* StreamingViewModel.swift in Sources */,
 				2EB5197527CCABAE004F5CC1 /* ImageControlCloseButton.swift in Sources */,
 				2EB5197627CCABAE004F5CC1 /* ImageFilterControlView.swift in Sources */,

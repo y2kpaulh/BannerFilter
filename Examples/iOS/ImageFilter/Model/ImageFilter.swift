@@ -1,6 +1,6 @@
 //
-//  ImageFilterModel.swift
-//  ImageSizeControl
+//  ImageFilter.swift
+//  ImageFilter
 //
 //  Created by Inpyo Hong on 2022/02/28.
 //
