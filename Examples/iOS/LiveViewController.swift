@@ -6,38 +6,6 @@ import VideoToolbox
 import PhotosUI
 import Combine
 
-enum BannerAlign: Int, CaseIterable {
-    case topLeft = 0,
-         topMid,
-         topRight,
-         midLeft,
-         midRight,
-         bottomLeft,
-         bottomMid,
-         bottomRight
-}
-
-struct BannerData {
-    var align: BannerAlign
-    var button: UIButton
-}
-
-enum BannerLayerPosition: Int, CaseIterable {
-    case bottom = 0, mid, top
-}
-
-struct BannerPosition {
-    var layer: BannerLayerPosition
-    var align: BannerAlign? = nil
-    var margin: CGPoint? = nil
-}
-
-struct BannerLayer {
-    var position: BannerPosition
-    var imageArray: [UIImage]? = nil
-}
-
-
 final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
     static let `default` = ExampleRecorderDelegate()
     
@@ -125,65 +93,22 @@ final class LiveViewController: UIViewController {
         lfView.videoGravity = .resize
         lfView.isUserInteractionEnabled = true
         
-        //        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
-        //        lfView.gestureRecognizers = [tapRecognizer]
-        
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
         self.viewModel.configPhotosUI()
     }
     
-    
     @IBAction func tapAddBannerBtn(_ sender: Any) {
         filterMenuView = ImageFilterMenuView(frame: self.view.frame)
         filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
         self.view.addSubview(filterMenuView)
+        
+        for filterData in self.viewModel.filterList {
+            filterMenuView.addSubview(filterData.menu.controlView)
+            filterMenuView.addSubview(filterData.menu.sizeControl)
+            filterMenuView.addSubview(filterData.menu.closeButton)
+        }
     }
-    
-    //    @objc func tapCloseBtn(_ sender: Any) {
-    //        self.bannerSettingsView.removeFromSuperview()
-    //        self.bannerSettingsView = nil
-    //    }
-    
-    //    fileprivate func hideImageControlView(id: Int, delay: Double) {
-    //        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-    //            if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
-    //                let changedView = self.imageControlViewArray[searchIndex]
-    //                changedView.isHidden = true
-    //                self.imageControlViewArray[searchIndex] = changedView
-    //            }
-    //        }
-    //    }
-    
-    //    @objc func tapScreen(_ gesture: UIGestureRecognizer) {
-    //        guard let gestureView = gesture.view else {
-    //            return
-    //        }
-    //
-    //        let touchPoint: CGPoint = gesture.location(in: gestureView)
-    //        print("touchPoint", touchPoint)
-    //
-    //        for (index, controlView) in self.imageControlViewArray.enumerated().reversed() {
-    //            let filterRect = controlView.frame
-    //
-    //            if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
-    //                (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) {
-    //
-    //                let imgFilter = self.imageFilterArray[index]
-    //
-    //                DispatchQueue.main.async {
-    //                    UIView.animate(withDuration: 0.5) {
-    //                        let changedView = controlView
-    //                        changedView.isHidden = false
-    //                        self.imageControlViewArray[index] = changedView
-    //                        self.hideImageControlView(id: imgFilter.id, delay: 3.0)
-    //                    }
-    //                }
-    //                return
-    //            }
-    //        }
-    //
-    //    }
     
     override func viewWillAppear(_ animated: Bool) {
         logger.info("viewWillAppear")
@@ -412,8 +337,8 @@ extension LiveViewController {
                                                              y: changeFrame.origin.y + 5)
                 
                 self.viewModel.filterList[changeIndex] = filterData
-                self.updateImageFilter(self.viewModel.filterList
-                                        .map{ $0.filter })
+//                self.updateImageFilter(self.viewModel.filterList
+//                                        .map{ $0.filter })
             }
         }
     }
@@ -443,7 +368,15 @@ extension LiveViewController {
         }
         
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
+       
         controlView.center = self.view.center
+        
+        if imageArray.count > 0 {
+            controlView.animationImages = imageArray
+            controlView.startAnimating()
+        } else {
+            controlView.image = image
+        }
         
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
@@ -514,9 +447,9 @@ extension LiveViewController {
                                                                  y: filterData.menu.controlView.frame.origin.y + 5)
                     
                     self.viewModel.filterList[changeIndex] = filterData
-                    self.updateImageFilter(self.viewModel.filterList.map({
-                        return $0.filter
-                    }))
+//                    self.updateImageFilter(self.viewModel.filterList.map({
+//                        return $0.filter
+//                    }))
                 }
             })
             .store(in: &self.cancelBag)
@@ -547,15 +480,19 @@ extension LiveViewController {
                 
                 DispatchQueue.main.async() {
                     UIView.animate(withDuration: 0.1) {
+                        if filterMenu.controlView.isAnimating {
+                            filterMenu.controlView.stopAnimating()
+                        }
+                        
                         filterMenu.controlView.removeFromSuperview()
                         filterMenu.sizeControl.removeFromSuperview()
                         filterMenu.closeButton.removeFromSuperview()
                         
                         self.viewModel.filterList.remove(at: changeIndex)
                         
-                        self.updateImageFilter(self.viewModel.filterList.map({
-                            return $0.filter
-                        }))
+//                        self.updateImageFilter(self.viewModel.filterList.map({
+//                            return $0.filter
+//                        }))
                     }
                 }
             })
@@ -567,9 +504,9 @@ extension LiveViewController {
         
         self.viewModel.filterList.append(filterData)
         
-        self.updateImageFilter(self.viewModel.filterList.map({
-            return $0.filter
-        }))
+//        self.updateImageFilter(self.viewModel.filterList.map({
+//            return $0.filter
+//        }))
     }
 }
 
@@ -586,7 +523,8 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                     guard let data = data else { return }
                     
                     guard let imageArray = self.viewModel.changeDataToImageArray(data: data) else { return }
-                    DispatchQueue.main.async { [unowned self] in
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
                         self.publishImageFilter(imageArray)
                     }
                 }
@@ -594,8 +532,9 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                 if itemProvider.canLoadObject(ofClass: UIImage.self) {
                     itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
                         guard let image = image as? UIImage else { return }
-                        DispatchQueue.main.async { [unowned self] in
-                            publishImageFilter([image])
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self = self else { return }
+                            self.publishImageFilter([image])
                         }
                     }
                 } else {

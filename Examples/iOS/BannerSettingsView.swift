@@ -9,6 +9,37 @@
 import UIKit
 import Combine
 
+enum BannerAlign: Int, CaseIterable {
+    case topLeft = 0,
+         topMid,
+         topRight,
+         midLeft,
+         midRight,
+         bottomLeft,
+         bottomMid,
+         bottomRight
+}
+
+struct BannerData {
+    var align: BannerAlign
+    var button: UIButton
+}
+
+enum BannerLayerPosition: Int, CaseIterable {
+    case bottom = 0, mid, top
+}
+
+struct BannerPosition {
+    var layer: BannerLayerPosition
+    var align: BannerAlign? = nil
+    var margin: CGPoint? = nil
+}
+
+struct BannerLayer {
+    var position: BannerPosition
+    var imageArray: [UIImage]? = nil
+}
+
 class BannerSettingsView: UIView {
     @IBOutlet weak var bannerPosition: UISegmentedControl!
     @IBOutlet weak var topLeftBtn: UIButton!

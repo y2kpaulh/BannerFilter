@@ -52,36 +52,7 @@ class ImageSizeControlView: UIImageView {
             
             let endPoint = sender.location(in: sender.view)
             // TODO: use the x and y coordinates of endPoint and beginPoint to determine which direction the swipe occurred.
-                        
-//            self.center = CGPoint(x: self.center.x + translation.x, y: self.center.y + translation.y)
-//            sender.setTranslation(CGPoint.zero, in: self)
-            
             self.dragEvent.send((self.tag, beginPoint, endPoint, translation))
-
-//            let resizeCondition = isResizeTargetView(beginPoint: beginPoint,
-//                                                     endPoint: endPoint)
-//
-//            guard resizeCondition != .none else { return }
-//
-//            let resizeValue = CGPointDistance(from: beginPoint, to: endPoint)
-//
-//            let bottomTrailingPoint = CGPoint(x: ImageSizeControlView.center.x + translation.x,
-//                                              y: ImageSizeControlView.center.y + translation.y)
-//
-//            let resultRect = getTargetViewRect(resizeCondition,
-//                                              resizeValue: resizeValue,
-//                                              bottomTrailingPoint: bottomTrailingPoint)
-//
-//            let lastCenterPos = targetImgView.center
-//
-//            UIView.animate(withDuration: 0.1) { [weak self] in
-//                guard let self = self else { return }
-//                self.targetImgView.frame = resultRect
-//                self.targetImgView.center = lastCenterPos
-//
-//                self.ImageSizeControlView.center = CGPoint(x: self.targetImgView.frame.maxX - 5, y: self.targetImgView.frame.maxY - 5)
-//                self.closeBtn.center = CGPoint(x: self.targetImgView.frame.maxX - 5, y: self.targetImgView.frame.origin.y + 5)
-//            }
         }
     }
     

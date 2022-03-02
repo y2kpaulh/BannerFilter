@@ -16,7 +16,7 @@ class ImageFilterControlView: UIImageView {
     var panEvent = PassthroughSubject<(Int, CGRect), Never>()
     var pinchEvent = PassthroughSubject<(Int, CGRect), Never>()
     var tapEvent = PassthroughSubject<Int, Never>()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -26,7 +26,7 @@ class ImageFilterControlView: UIImageView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func commonInit() {        
+    func commonInit() {
         self.backgroundColor = .clear
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.gray.cgColor
@@ -38,53 +38,61 @@ class ImageFilterControlView: UIImageView {
         tapGesture.require(toFail: tapGesture)
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureEvent))
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pichGestureEvent))
-
+        
         self.gestureRecognizers = [tapGesture, panGesture, pinchGesture]
     }
     
-    @objc func tapGestureEvent(_ sender: UITapGestureRecognizer) {
-        print(#function)
+    @objc func tapGestureEvent(_ gesture: UITapGestureRecognizer) {
         self.tapEvent.send(self.tag)
     }
     
-    @objc func panGestureEvent(_ sender: UIPanGestureRecognizer) {
-        print(#function)
-        let translation = sender.translation(in: self)
+    @objc func panGestureEvent(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+     
+        //        let velocity = gesture.velocity(in: self)
+        //        let speedThreshold:CGFloat = 300
+        //
+        //        print(self.tag, "velocity", velocity)
+        //
+        //        if velocity.x.magnitude > velocity.y.magnitude {
+        //          //좌우
+        //          velocity.x < 0 ? print("좌") :  print("우")
+        //        } else {
+        //          //상하
+        //          velocity.y < 0 ? print("상") :  print("하")
+        //        }
+        //
+        //        if velocity.y.magnitude > speedThreshold {
+        //            // 그냥 지나가는거니까 이미지 렌더 필요 없음
+        //            print(self.tag, "그냥 지나가는거니까 이미지 렌더 필요 없음")
+        //        } else {
+        //            //그냥 지나가는게 아니니까 이미지 렌더 필요
+        //            print(self.tag, "그냥 지나가는게 아니니까 이미지 렌더 필요")
+        //        }
         
         UIView.animate(withDuration: 0.1) { [weak self] in
             guard let self = self else { return }
-            self.center = CGPoint(x: self.center.x + translation.x, y: self.center.y + translation.y)
+            self.center = CGPoint(x: self.center.x + translation.x,
+                                  y: self.center.y + translation.y)
         }
         
-        sender.setTranslation(CGPoint.zero, in: self)
+        gesture.setTranslation(CGPoint.zero, in: self)
         
         self.panEvent.send((self.tag, self.frame))
     }
-
-    @objc func pichGestureEvent(_ sender: UIPinchGestureRecognizer) {
-        print(#function)
-        guard let gestureView = sender.view else {
-          return
+    
+    @objc func pichGestureEvent(_ gesture: UIPinchGestureRecognizer) {
+        guard let gestureView = gesture.view else {
+            return
         }
-
+        
         gestureView.transform = gestureView.transform.scaledBy(
-          x: sender.scale,
-          y: sender.scale
+            x: gesture.scale,
+            y: gesture.scale
         )
         
-        sender.scale = 1
+        gesture.scale = 1
         
         self.pinchEvent.send((self.tag, self.frame))
     }
-}
-
-
-
-extension ImageFilterControlView: UIGestureRecognizerDelegate {
-  func gestureRecognizer(
-    _ gestureRecognizer: UIGestureRecognizer,
-    shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-  ) -> Bool {
-    return true
-  }
 }

@@ -14,6 +14,7 @@ class ImageFilterMenuView: UIView {
     @IBOutlet weak var addBtn: UIButton!
     @IBOutlet weak var okBtn: UIButton!
     
+    var tapGesture = UITapGestureRecognizer()
     var filterArray: [ImageFilter]!
     var subscriptions = Set<AnyCancellable>()
 
@@ -36,7 +37,15 @@ class ImageFilterMenuView: UIView {
                                             .flexibleWidth]
             
             cancelBtn.addTarget(self, action: #selector(tapCloseBtn), for: .touchUpInside)
+            
+            tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureEvent))
+            self.gestureRecognizers = [tapGesture]
+            self.isUserInteractionEnabled = true
         }
+    }
+    
+    @objc func tapGestureEvent(_ gesture: UITapGestureRecognizer) {
+        
     }
     
     @objc func tapCloseBtn( _ sender: AnyObject) {
