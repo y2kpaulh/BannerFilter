@@ -59,9 +59,7 @@ final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
 
 final class LiveViewController: UIViewController {
     private static let maxRetryCount: Int = 5
-    var screenRatio: CGSize {
-        return CGSize(width: self.currentResolution.width/UIScreen.main.bounds.width, height: self.currentResolution.height/UIScreen.main.bounds.height)
-    }
+
     @IBOutlet private weak var lfView: MTHKView!
     @IBOutlet private weak var currentFPSLabel: UILabel!
     @IBOutlet private weak var publishButton: UIButton!
@@ -77,17 +75,12 @@ final class LiveViewController: UIViewController {
     @IBOutlet weak var effectView: UIView!
     @IBOutlet weak var effectControlView: UIView!
     
-    var imageFilterArray = [ImageFilter]()
-    var imageControlViewArray = [ImageFilterControlView]()
-    
     private var rtmpConnection = RTMPConnection()
     private var rtmpStream: RTMPStream!
     private var sharedObject: RTMPSharedObject!
     private var currentEffect: VideoEffect?
     private var currentPosition: AVCaptureDevice.Position = .back
     private var retryCount: Int = 0
-    
-    private var currentResolution: CGSize = CGSize(width: 720, height: 1280)
     private var subscriptions = Set<AnyCancellable>()
     
     var filterMenuView: ImageFilterMenuView!
@@ -97,11 +90,11 @@ final class LiveViewController: UIViewController {
     var cancelBag = Set<AnyCancellable>()
     
     var publishSizeRatio: CGSize {
-        return CGSize(width: (lfView.bounds.size.width/currentResolution.width), height: (lfView.bounds.size.height/currentResolution.height))
+        return CGSize(width: (lfView.bounds.size.width/self.viewModel.currentResolution.width), height: (lfView.bounds.size.height/self.viewModel.currentResolution.height))
     }
     
     var screenSizeRatio: CGSize {
-        return CGSize(width: (currentResolution.width/lfView.bounds.size.width), height: (currentResolution.height/lfView.bounds.size.height))
+        return CGSize(width: (self.viewModel.currentResolution.width/lfView.bounds.size.width), height: (self.viewModel.currentResolution.height/lfView.bounds.size.height))
     }
     
     override func viewDidLoad() {
@@ -120,8 +113,8 @@ final class LiveViewController: UIViewController {
             .preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode.auto
         ]
         rtmpStream.videoSettings = [
-            .width: currentResolution.width,
-            .height: currentResolution.height,
+            .width: self.viewModel.currentResolution.width,
+            .height: self.viewModel.currentResolution.height,
             .profileLevel: kVTProfileLevel_H264_High_AutoLevel
         ]
         //rtmpStream.mixer.recorder.delegate = ExampleRecorderDelegate.shared
@@ -132,8 +125,8 @@ final class LiveViewController: UIViewController {
         lfView.videoGravity = .resize
         lfView.isUserInteractionEnabled = true
         
-        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
-        lfView.gestureRecognizers = [tapRecognizer]
+        //        let tapRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapScreen(_:)))
+        //        lfView.gestureRecognizers = [tapRecognizer]
         
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         
@@ -152,45 +145,45 @@ final class LiveViewController: UIViewController {
     //        self.bannerSettingsView = nil
     //    }
     
-    fileprivate func hideImageControlView(id: Int, delay: Double) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
-                let changedView = self.imageControlViewArray[searchIndex]
-                changedView.isHidden = true
-                self.imageControlViewArray[searchIndex] = changedView
-            }
-        }
-    }
+    //    fileprivate func hideImageControlView(id: Int, delay: Double) {
+    //        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+    //            if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
+    //                let changedView = self.imageControlViewArray[searchIndex]
+    //                changedView.isHidden = true
+    //                self.imageControlViewArray[searchIndex] = changedView
+    //            }
+    //        }
+    //    }
     
-    @objc func tapScreen(_ gesture: UIGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-            return
-        }
-        
-        let touchPoint: CGPoint = gesture.location(in: gestureView)
-        print("touchPoint", touchPoint)
-        
-        for (index, controlView) in self.imageControlViewArray.enumerated().reversed() {
-            let filterRect = controlView.frame
-            
-            if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
-                (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) {
-                
-                let imgFilter = self.imageFilterArray[index]
-                
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: 0.5) {
-                        let changedView = controlView
-                        changedView.isHidden = false
-                        self.imageControlViewArray[index] = changedView
-                        self.hideImageControlView(id: imgFilter.id, delay: 3.0)
-                    }
-                }
-                return
-            }
-        }
-        
-    }
+    //    @objc func tapScreen(_ gesture: UIGestureRecognizer) {
+    //        guard let gestureView = gesture.view else {
+    //            return
+    //        }
+    //
+    //        let touchPoint: CGPoint = gesture.location(in: gestureView)
+    //        print("touchPoint", touchPoint)
+    //
+    //        for (index, controlView) in self.imageControlViewArray.enumerated().reversed() {
+    //            let filterRect = controlView.frame
+    //
+    //            if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
+    //                (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) {
+    //
+    //                let imgFilter = self.imageFilterArray[index]
+    //
+    //                DispatchQueue.main.async {
+    //                    UIView.animate(withDuration: 0.5) {
+    //                        let changedView = controlView
+    //                        changedView.isHidden = false
+    //                        self.imageControlViewArray[index] = changedView
+    //                        self.hideImageControlView(id: imgFilter.id, delay: 3.0)
+    //                    }
+    //                }
+    //                return
+    //            }
+    //        }
+    //
+    //    }
     
     override func viewWillAppear(_ animated: Bool) {
         logger.info("viewWillAppear")
@@ -389,6 +382,42 @@ extension LiveViewController {
         _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
     }
     
+    fileprivate func updatePosition() -> (Int, CGRect) -> Void {
+        return { [unowned self] (viewId, changeFrame) in
+            print("panchEvent", viewId, changeFrame)
+            
+            let changeIndex = self.viewModel.filterData
+                .map{ $0.filter }
+                .firstIndex{ $0.id == viewId }!
+            
+            let publishPoint = CGPoint(
+                x: changeFrame.origin.x * self.viewModel.screenRatio.width,
+                y: changeFrame.origin.y * self.viewModel.screenRatio.height)
+            
+            let publishSize = CGSize(
+                width: changeFrame.size.width * self.viewModel.screenRatio.width,
+                height: changeFrame.size.height * self.viewModel.screenRatio.height)
+            
+            let publishRect = CGRect(origin: publishPoint, size: publishSize)
+            
+            var imgFilter = self.viewModel.filterData[changeIndex].filter
+            imgFilter.rect = publishRect
+            
+            self.viewModel.filterData[changeIndex].filter = imgFilter
+            
+            // publish image
+            self.updateImageFilter(self.viewModel.filterData
+                                    .map{ $0.filter })
+            
+            // update control view position
+            UIView.animate(withDuration: 0.1) { [weak self] in
+                guard let self = self else { return }
+                self.viewModel.filterData[changeIndex].menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.maxY - 5)
+                self.viewModel.filterData[changeIndex].menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5, y: changeFrame.origin.y + 5)
+            }
+        }
+    }
+    
     fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
         let image: UIImage = imageArray[0]
         
@@ -396,33 +425,36 @@ extension LiveViewController {
                                   ratio: max(image.size.width, image.size.height))
         
         var publishSize = CGSize(width: image.size.width,
-                                     height: image.size.height)
+                                 height: image.size.height)
         
-        var scaledSize = CGSize(
+        var screenScaledSize = CGSize(
             width: publishSize.width * publishSizeRatio.width,
             height: publishSize.height * publishSizeRatio.height)
         
-        if publishSize.width > currentResolution.width * 0.9 {
-            let maxLength = currentResolution.width * 0.9
+        if publishSize.width > self.viewModel.currentResolution.width * 0.9 {
+            let maxLength = self.viewModel.currentResolution.width * 0.9
             let scaleFactor = maxLength / imageInfo.ratio
             
             publishSize = CGSize(width: publishSize.width * scaleFactor,
-                                     height: publishSize.height * scaleFactor)
-            scaledSize = CGSize(
+                                 height: publishSize.height * scaleFactor)
+            screenScaledSize = CGSize(
                 width: publishSize.width * publishSizeRatio.width,
                 height: publishSize.height * publishSizeRatio.height)
         }
         
-        let publishRect = CGRect(origin: CGPoint(x: (currentResolution.width/2) - (publishSize.width/2) , y: (currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
+        //first position
+        //screen center position
+        let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
         
         print("publishRect", publishRect)
+        
         let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
         
-        let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: scaledSize))
+        let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
         controlView.center = self.view.center
-       
+        
         controlView.tag = imgFilter.id
-
+        
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
         sizeControlView.tag = imgFilter.id
@@ -435,47 +467,63 @@ extension LiveViewController {
         let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
         
         sizeControlView.dragEvent
-            .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint) in
-                print("dragEvent", viewId, beginPoint, endPoint)
+            .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint, translation) in
+                print("dragEvent", viewId, beginPoint, endPoint, translation)
                 
-                //                        print("gestureEvent", gestureEvent)
-                //                        let id: Int = gestureEvent.0
-                //                        let frame: CGRect = gestureEvent.1
-                //                        let degrees: Double? = gestureEvent.2
-                //
-                //                        let screenPoint = CGPoint(
-                //                            x: frame.origin.x * screenRatio.width,
-                //                            y: frame.origin.y * screenRatio.height)
-                //
-                //                        let screenSize = CGSize(
-                //                            width: frame.size.width * screenRatio.width,
-                //                            height: frame.size.height * screenRatio.height)
-                //
-                //                        let screenRect = CGRect(origin: screenPoint, size: screenSize)
-                //
-                //                        print("publish rect", screenRect, "degrees", degrees)
-                //                        let index = self.imageFilterArray.firstIndex{ $0.id == id}!
-                //
-                //                        var imgFilter = self.imageFilterArray[index]
-                //                        imgFilter.rect = screenRect
-                //                        imgFilter.degrees = degrees
-                //
-                //                        self.imageFilterArray[index] = imgFilter
-                //                        self.updateImageFilter(self.imageFilterArray)
-                //                        self.hideImageControlView(id: imgFilter.id, delay: 1.0)
+                let changeIndex = self.viewModel.filterData.firstIndex {
+                    $0.filter.id == viewId
+                }!
+                
+                let resizeCondition = self.viewModel.isResizeTargetView(beginPoint: beginPoint,
+                                                         endPoint: endPoint)
+                
+                guard resizeCondition != .none else { return }
+                
+                let resizeValue = self.viewModel.CGPointDistance(from: beginPoint, to: endPoint)
+                                
+                let bottomTrailingPoint = CGPoint(x: filterData.menu.sizeControl.center.x + translation.x,
+                                                  y: filterData.menu.sizeControl.center.y + translation.y)
+                
+                var filterData = self.viewModel.filterData[changeIndex]
+
+                let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
+                                                   filterData: filterData,
+                                                   resizeValue: resizeValue,
+                                                   bottomTrailingPoint: bottomTrailingPoint)
+                
+                let lastCenterPos = filterData.menu.controlView.center
+                
+                let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width, height: resultRect.size.height/publishSizeRatio.height)
+                
+                let publishPoint = CGPoint(
+                    x: filterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
+                    y: filterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
+               
+                let publishRect = CGRect(origin: publishPoint, size: publishSize)
+                
+                filterData.filter.rect = publishRect
+                self.viewModel.filterData[changeIndex] = filterData
+
+                self.updateImageFilter(self.viewModel.filterData.map({
+                    return $0.filter
+                }))
+                
+                filterData.menu.controlView.frame = resultRect
+                filterData.menu.controlView.center = lastCenterPos
+
+                UIView.animate(withDuration: 0.1) {
+                    filterData.menu.sizeControl.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5, y: filterData.menu.controlView.frame.maxY - 5)
+                    filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5, y: filterData.menu.controlView.frame.origin.y + 5)
+                }
             })
             .store(in: &self.cancelBag)
         
         controlView.panEvent
-            .sink(receiveValue: { [unowned self] (viewId, frame) in
-                print("panchEvent", viewId, frame)
-            })
+            .sink(receiveValue: updatePosition())
             .store(in: &self.cancelBag)
         
         controlView.pinchEvent
-            .sink(receiveValue: { [unowned self] (viewId, frame) in
-                print("pinchEvent", viewId, frame)
-            })
+            .sink(receiveValue: updatePosition())
             .store(in: &self.cancelBag)
         
         controlView.tapEvent
@@ -487,39 +535,31 @@ extension LiveViewController {
         closeBtn.closeEvent
             .sink(receiveValue: { [unowned self] (viewId) in
                 print("closeEvent", viewId)
+                
+                //                DispatchQueue.main.async() {
+                //                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
+                //                        self.imageFilterArray.remove(at: searchIndex)
+                //                        UIView.animate(withDuration: 0.5) {
+                //                            self.imageControlViewArray[searchIndex].removeFromSuperview()
+                //                        }
+                //                        self.imageControlViewArray.remove(at: searchIndex)
+                //
+                //                        self.updateImageFilter(self.imageFilterArray)
+                //                    }
+                //                }
             })
             .store(in: &self.cancelBag)
-        //
-        //        imgControlView.closeEvent
-        //            .sink(receiveValue: { id in
-        //                print("closeEvent")
-        //
-        //                DispatchQueue.main.async() {
-        //                    if let searchIndex = self.imageFilterArray.firstIndex(where: { $0.id == id }) {
-        //                        self.imageFilterArray.remove(at: searchIndex)
-        //                        UIView.animate(withDuration: 0.5) {
-        //                            self.imageControlViewArray[searchIndex].removeFromSuperview()
-        //                        }
-        //                        self.imageControlViewArray.remove(at: searchIndex)
-        //
-        //                        self.updateImageFilter(self.imageFilterArray)
-        //                    }
-        //                }
-        //            })
-        //            .store(in: &self.cancelBag)
-        //
         
         self.viewModel.filterData.append(filterData)
         
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
-   
+        
         self.updateImageFilter(self.viewModel.filterData.map({
-           return $0.filter
+            return $0.filter
         }))
     }
-
 }
 
 extension LiveViewController: PHPickerViewControllerDelegate {

@@ -13,7 +13,7 @@ final class TempBannerEffect: VideoEffect {
     var extent = CGRect.zero {
         didSet {
             UIGraphicsBeginImageContext(extent.size)
-           
+            
             if let imgArr = imageArray {
                 if imgArr.count > 1 {
                     if imgArr.count == currIndex + 1 {
@@ -31,7 +31,7 @@ final class TempBannerEffect: VideoEffect {
                 
                 targetImage = targetImage.resize(targetSize: rect.size)
                 //targetImage = targetImage.withSize(rect.size.width, rect.size.height)
-
+                
                 targetImage.draw(at: rect.origin)
             }
             
@@ -67,12 +67,12 @@ final class BannerEffect: VideoEffect {
     var banner: CIImage?
     var currIndexArray = [0, 0, 0]
     var bannerLayers: [BannerLayer] = [BannerLayer]()
-
+    
     var extent = CGRect.zero {
         didSet {
-//            if extent == oldValue {
-//                return
-//            }
+            //            if extent == oldValue {
+            //                return
+            //            }
             UIGraphicsBeginImageContext(extent.size)
             self.drawLayerImage(currIndexArray: &currIndexArray, extent: extent, layers: bannerLayers)
             banner = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
@@ -102,7 +102,7 @@ final class BannerEffect: VideoEffect {
         
         for (index, layer) in layers.enumerated() {
             if let imgArr = layer.imageArray, let align = layer.position.align, let margin = layer.position.margin {
-
+                
                 if imgArr.count > 1 {
                     if imgArr.count == currIndexArray[index] + 1 {
                         currIndexArray[index] = 0
@@ -200,13 +200,12 @@ final class ImageFilterEffect: VideoEffect {
             
             var targetImage: UIImage = layer.imageArray[currIndexArray[index]]
             
-//            if let degrees = layer.degrees {
-//                targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
-//            }
+            //            if let degrees = layer.degrees {
+            //                targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
+            //            }
             
-            print("layer.rect",layer.rect)
             targetImage = targetImage.resize(targetSize: layer.rect.size)
-
+            
             targetImage.draw(at: layer.rect.origin)
         }
     }

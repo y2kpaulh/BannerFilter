@@ -49,7 +49,6 @@ class ImageFilterControlView: UIImageView {
     
     @objc func panGestureEvent(_ sender: UIPanGestureRecognizer) {
         print(#function)
-        
         let translation = sender.translation(in: self)
         
         UIView.animate(withDuration: 0.1) { [weak self] in

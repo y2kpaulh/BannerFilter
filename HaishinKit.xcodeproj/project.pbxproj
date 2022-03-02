@@ -1498,11 +1498,11 @@
 		2EB5197727CCABB2004F5CC1 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				2EB5197027CCABAE004F5CC1 /* ImageControlCloseButton.swift */,
 				2EB5197127CCABAE004F5CC1 /* ImageFilterControlView.swift */,
+				2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */,
+				2EB5197027CCABAE004F5CC1 /* ImageControlCloseButton.swift */,
 				2EB5196E27CCABAE004F5CC1 /* ImageFilterMenuView.swift */,
 				2EB5196F27CCABAE004F5CC1 /* ImageFilterMenuView.xib */,
-				2EB5196D27CCABAD004F5CC1 /* ImageSizeControlView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

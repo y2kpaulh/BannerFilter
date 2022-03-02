@@ -14,7 +14,7 @@ enum ResizeOption: Int {
 
 class ImageSizeControlView: UIImageView {
     var panGesture = UIPanGestureRecognizer()
-    var dragEvent = PassthroughSubject<(Int, CGPoint, CGPoint), Never>()
+    var dragEvent = PassthroughSubject<(Int, CGPoint, CGPoint, CGPoint), Never>()
     
     private var lastSwipeBeginningPoint: CGPoint?
 
@@ -52,13 +52,12 @@ class ImageSizeControlView: UIImageView {
             
             let endPoint = sender.location(in: sender.view)
             // TODO: use the x and y coordinates of endPoint and beginPoint to determine which direction the swipe occurred.
-            
-            print("beginPoint", beginPoint,"endPoint",endPoint)
-            
-            self.dragEvent.send((self.tag, beginPoint, endPoint))
+                        
 //            self.center = CGPoint(x: self.center.x + translation.x, y: self.center.y + translation.y)
 //            sender.setTranslation(CGPoint.zero, in: self)
             
+            self.dragEvent.send((self.tag, beginPoint, endPoint, translation))
+
 //            let resizeCondition = isResizeTargetView(beginPoint: beginPoint,
 //                                                     endPoint: endPoint)
 //
@@ -83,8 +82,6 @@ class ImageSizeControlView: UIImageView {
 //                self.ImageSizeControlView.center = CGPoint(x: self.targetImgView.frame.maxX - 5, y: self.targetImgView.frame.maxY - 5)
 //                self.closeBtn.center = CGPoint(x: self.targetImgView.frame.maxX - 5, y: self.targetImgView.frame.origin.y + 5)
 //            }
-//
-//            sender.setTranslation(CGPoint.zero, in: self.view)
         }
     }
     
