@@ -421,8 +421,6 @@ extension LiveViewController {
         // enlarge menu pan gesture
         sizeControlView.dragEvent
             .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint, translation) in
-                print("dragEvent", viewId, beginPoint, endPoint, translation)
-                
                 let resizeCondition = self.viewModel.isResizeTargetView(beginPoint: beginPoint,
                                                                         endPoint: endPoint)
                 guard resizeCondition != .none else { return }
@@ -474,8 +472,6 @@ extension LiveViewController {
         // control view pan gesture
         controlView.panEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
-                print("tapEvent", viewId, gesture)
-                
                 let translation = gesture.translation(in: controlView)
                 
                 let changeIndex = self.viewModel.getFilterIndex(viewId)
@@ -495,8 +491,6 @@ extension LiveViewController {
         // control view pinch gesture
         controlView.pinchEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
-                print("pinchEvent", viewId, "scale", gesture.scale)
-                
                 let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 // update control view position
@@ -515,9 +509,7 @@ extension LiveViewController {
         
         // close button event
         closeBtn.closeEvent
-            .sink(receiveValue: { [unowned self] (viewId) in
-                print("closeEvent", viewId)
-                
+            .sink(receiveValue: { [unowned self] (viewId) in                
                 let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 // read index filter data
