@@ -321,6 +321,7 @@ extension LiveViewController {
     }
     
     fileprivate func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect, _ self: LiveViewController) {
+        //image filter scaling
         let publishPoint = CGPoint(
             x: changeFrame.origin.x * self.viewModel.screenRatio.width,
             y: changeFrame.origin.y * self.viewModel.screenRatio.height)
@@ -331,13 +332,16 @@ extension LiveViewController {
         
         let publishRect = CGRect(origin: publishPoint, size: publishSize)
         
+        // read index data
         var filterData = self.viewModel.filterList[changeIndex]
+        
+        //change Position
         filterData.filter.rect = publishRect
         filterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.maxY - 5)
         filterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.origin.y + 5)
-        
+        // update index data
         self.viewModel.filterList[changeIndex] = filterData
     }
     
@@ -365,10 +369,11 @@ extension LiveViewController {
                 height: publishSize.height * publishSizeRatio.height)
         }
         
+        // set up control menu
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
-        
         controlView.center = self.view.center
         
+        // if data is gif image array, start animation
         if imageArray.count > 0 {
             controlView.animationImages = imageArray
             controlView.startAnimating()
@@ -376,37 +381,40 @@ extension LiveViewController {
             controlView.image = image
         }
         
+        // enlagre view
         let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
         
+        // close button
         let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
         closeBtn.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.origin.y + 5)
         
-        //first position
-        //screen center position
+        //set up first position
         let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
         
         let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
         
+        // every view have same id
         controlView.tag = imgFilter.id
         sizeControlView.tag = imgFilter.id
         closeBtn.tag = imgFilter.id
-        
+       
+        // setup filter data, menu
         let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
         let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
         
+        // enlarge menu pan gesture
         sizeControlView.dragEvent
             .sink(receiveValue: { [unowned self] (viewId, beginPoint, endPoint, translation) in
                 print("dragEvent", viewId, beginPoint, endPoint, translation)
                 
+                let resizeCondition = self.viewModel.isResizeTargetView(beginPoint: beginPoint,
+                                                                        endPoint: endPoint)
+                guard resizeCondition != .none else { return }
+                
                 let changeIndex = self.viewModel.filterList.firstIndex {
                     $0.filter.id == viewId
                 }!
-                
-                let resizeCondition = self.viewModel.isResizeTargetView(beginPoint: beginPoint,
-                                                                        endPoint: endPoint)
-                
-                guard resizeCondition != .none else { return }
                 
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
                 
@@ -436,6 +444,7 @@ extension LiveViewController {
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
                     
+                    //update position
                     filterData.menu.controlView.frame = resultRect
                     filterData.menu.controlView.center = lastCenterPos
                     
@@ -444,11 +453,13 @@ extension LiveViewController {
                     filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
                                                                  y: filterData.menu.controlView.frame.origin.y + 5)
                     
+                    // update data
                     self.viewModel.filterList[changeIndex] = filterData
                 }
             })
             .store(in: &self.cancelBag)
         
+        // control view pan gesture
         controlView.panEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
                 print("tapEvent", viewId, gesture)
@@ -465,7 +476,6 @@ extension LiveViewController {
                                                  y: controlView.center.y + translation.y)
                     
                     let changeFrame = controlView.frame
-                    
                     updateFilterPosition(changeIndex, changeFrame, self)
                 }
                 
@@ -473,6 +483,7 @@ extension LiveViewController {
             })
             .store(in: &self.cancelBag)
         
+        // control view pinch gesture
         controlView.pinchEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
                 print("tapEvent", viewId, gesture)
@@ -489,22 +500,22 @@ extension LiveViewController {
                         x: gesture.scale,
                         y: gesture.scale
                     )
-                    
                     gesture.scale = 1
                     
                     let changeFrame = controlView.frame
-                    
                     updateFilterPosition(changeIndex, changeFrame, self)
                 }
             })
             .store(in: &self.cancelBag)
         
+        // control view tap gesture
         controlView.tapEvent
             .sink(receiveValue: { [unowned self] (viewId) in
                 print("tapEvent", viewId)
             })
             .store(in: &self.cancelBag)
         
+        // close button event
         closeBtn.closeEvent
             .sink(receiveValue: { [unowned self] (viewId) in
                 print("closeEvent", viewId)
@@ -513,6 +524,7 @@ extension LiveViewController {
                     $0.filter.id == viewId
                 }!
                 
+                // read index filter data
                 let filterMenu = self.viewModel.filterList[changeIndex].menu
                 
                 DispatchQueue.main.async() {
@@ -521,20 +533,24 @@ extension LiveViewController {
                             filterMenu.controlView.stopAnimating()
                         }
                         
+                        // remove control view
                         filterMenu.controlView.removeFromSuperview()
                         filterMenu.sizeControl.removeFromSuperview()
                         filterMenu.closeButton.removeFromSuperview()
                         
+                        //remove data
                         self.viewModel.filterList.remove(at: changeIndex)
                     }
                 }
             })
             .store(in: &self.cancelBag)
         
+        // draw control view
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
         
+        // add filter data
         self.viewModel.filterList.append(filterData)
     }
 }
@@ -542,34 +558,21 @@ extension LiveViewController {
 extension LiveViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
-        
         guard let itemProvider = results.first?.itemProvider else { return }
         
         itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, error in
             if let url = url as NSURL?, let filePathURL = url.fileReferenceURL(), filePathURL.absoluteString.contains(".gif") {
                 itemProvider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, _ in
-                    guard let self = self else { return }
-                    guard let data = data else { return }
-                    guard let imageArray = self.viewModel.changeDataToImageArray(data: data) else { return }
-                    
-                    var originalImageArray = [UIImage]()
-                    for image in imageArray {
-                        if let originalImage = image.upOrientationImage() {
-                            originalImageArray.append(originalImage)
-                        }
-                    }
-                    
+                    guard let self = self, let data = data, let imageArray = self.viewModel.changeDataToImageArray(data: data) else { return }
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
-                        self.publishImageFilter(originalImageArray)
+                        self.publishImageFilter(imageArray)
                     }
                 }
             } else {
                 if itemProvider.canLoadObject(ofClass: UIImage.self) {
                     itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
-                        guard let image = image as? UIImage,
-                              let originalImage = image.upOrientationImage() else { return }
-                        
+                        guard let image = image as? UIImage, let originalImage = image.upOrientationImage() else { return }
                         DispatchQueue.main.async { [weak self] in
                             guard let self = self else { return }
                             self.publishImageFilter([originalImage])

@@ -51,7 +51,11 @@ class ViewModel {
         for index in 0 ..< framesCount {
             if let cgImageRef = CGImageSourceCreateImageAtIndex(imageSource, index, nil) {
                 let uiImageRef = UIImage(cgImage: cgImageRef)
-                frameList.append(uiImageRef)
+                
+                // fix orientation
+                if let image = uiImageRef.upOrientationImage() {
+                    frameList.append(image)
+                }
             }
         }
         
