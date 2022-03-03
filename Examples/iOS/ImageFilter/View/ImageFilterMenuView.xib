@@ -19,6 +19,10 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EiA-ZN-HMp">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcp-7G-5n4" userLabel="CancelButton">
                     <rect key="frame" x="4" y="589" width="60" height="60"/>
                     <constraints>
@@ -98,37 +102,22 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                 </button>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradationBgTop" translatesAutoresizingMaskIntoConstraints="NO" id="WwE-DS-RGV">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="160"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="160" id="pBL-CV-0CB"/>
-                    </constraints>
-                </imageView>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradationBgBottom" translatesAutoresizingMaskIntoConstraints="NO" id="cH6-YZ-XgB">
-                    <rect key="frame" x="0.0" y="267" width="375" height="400"/>
-                </imageView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="EMz-hC-N1k" secondAttribute="trailing" constant="4" id="0Bm-AF-9Vo"/>
                 <constraint firstItem="8zh-TV-c6A" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="1FU-Bj-bgW"/>
-                <constraint firstItem="cH6-YZ-XgB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="2Zn-me-NNS"/>
-                <constraint firstAttribute="trailing" secondItem="WwE-DS-RGV" secondAttribute="trailing" id="682-RQ-iJh"/>
+                <constraint firstItem="EiA-ZN-HMp" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="1aC-Xf-41U"/>
                 <constraint firstItem="EMz-hC-N1k" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="AUa-lh-DBz"/>
-                <constraint firstAttribute="bottom" secondItem="cH6-YZ-XgB" secondAttribute="bottom" id="Jkt-ye-ewP"/>
+                <constraint firstItem="EiA-ZN-HMp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Hnz-oo-Or5"/>
+                <constraint firstAttribute="bottom" secondItem="EiA-ZN-HMp" secondAttribute="bottom" id="Oz0-WP-hTQ"/>
                 <constraint firstAttribute="bottom" secondItem="8zh-TV-c6A" secondAttribute="bottom" constant="30" id="S3x-Tm-YuI"/>
                 <constraint firstItem="hcp-7G-5n4" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="VEz-vb-vkv"/>
-                <constraint firstAttribute="trailing" secondItem="cH6-YZ-XgB" secondAttribute="trailing" id="X7J-ZJ-Pou"/>
-                <constraint firstItem="WwE-DS-RGV" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="c23-u2-9X5"/>
-                <constraint firstItem="WwE-DS-RGV" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="eKY-4a-5uh"/>
+                <constraint firstAttribute="trailing" secondItem="EiA-ZN-HMp" secondAttribute="trailing" id="nVm-hc-Foi"/>
                 <constraint firstItem="hcp-7G-5n4" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="ujf-Wx-5Qd"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="176.08695652173915" y="149.66517857142856"/>
         </view>
     </objects>
-    <resources>
-        <image name="gradationBgBottom" width="360" height="400"/>
-        <image name="gradationBgTop" width="360" height="160"/>
-    </resources>
 </document>

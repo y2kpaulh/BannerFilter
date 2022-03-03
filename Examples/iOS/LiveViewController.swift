@@ -530,11 +530,6 @@ extension LiveViewController {
                         if filterMenu.controlView.isAnimating {
                             filterMenu.controlView.stopAnimating()
                         }
-                        
-                        //change gray view in control view area
-                        let grayView = UIView(frame: filterMenu.controlView.frame)
-                        grayView.backgroundColor = .black.withAlphaComponent(0.5)
-                        self.filterMenuView.addSubview(grayView)
 
                         // remove control view
                         filterMenu.controlView.removeFromSuperview()
@@ -552,6 +547,14 @@ extension LiveViewController {
         self.filterMenuView.addSubview(controlView)
         self.filterMenuView.addSubview(sizeControlView)
         self.filterMenuView.addSubview(closeBtn)
+        
+        self.viewModel.filterList = self.viewModel.filterList.map {
+            let indexData = $0
+            indexData.menu.controlView.isUserInteractionEnabled = false
+            indexData.menu.sizeControl.isHidden = true
+            indexData.menu.closeButton.isHidden = true
+            return indexData
+        }
         
         // add filter data
         self.viewModel.filterList.append(filterData)

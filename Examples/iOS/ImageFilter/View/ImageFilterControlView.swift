@@ -28,8 +28,8 @@ class ImageFilterControlView: UIImageView {
     
     func commonInit() {
         self.backgroundColor = .clear
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.gray.cgColor
+//        self.layer.borderWidth = 1
+//        self.layer.borderColor = UIColor.gray.cgColor
         
         self.isUserInteractionEnabled = true
         self.isMultipleTouchEnabled = true
