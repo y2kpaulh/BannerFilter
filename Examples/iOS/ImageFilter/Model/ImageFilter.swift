@@ -27,6 +27,6 @@ struct ImageInfo {
 
 struct ImageFilterData {
     var menu: ImageFilterMenu
-    var filter: ImageFilter
+    var data: ImageFilter
 }
 

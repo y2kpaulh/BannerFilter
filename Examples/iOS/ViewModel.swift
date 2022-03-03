@@ -133,10 +133,10 @@ class ViewModel {
                 break
             }
     
-            scaleFactor = targetLength / filterData.filter.info.ratio
+            scaleFactor = targetLength / filterData.data.info.ratio
     
-            resultWidth = filterData.filter.info.size.width * scaleFactor
-            resultHeight = filterData.filter.info.size.height * scaleFactor
+            resultWidth = filterData.data.info.size.width * scaleFactor
+            resultHeight = filterData.data.info.size.height * scaleFactor
     
             resultSize = CGSize(width: resultWidth, height: resultHeight)
     

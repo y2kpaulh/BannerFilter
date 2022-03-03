@@ -200,7 +200,7 @@ final class LiveViewController: UIViewController {
         UIView.animate(withDuration: 0.5) {
             self.filterMenuView.removeFromSuperview()
             self.updateImageFilter(self.viewModel.filterList.map({
-                return $0.filter
+                return $0.data
             }))
         }
     }
@@ -336,7 +336,7 @@ extension LiveViewController {
         var filterData = self.viewModel.filterList[changeIndex]
         
         //change Position
-        filterData.filter.rect = publishRect
+        filterData.data.rect = publishRect
         filterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.maxY - 5)
         filterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
@@ -369,7 +369,9 @@ extension LiveViewController {
                 height: publishSize.height * publishSizeRatio.height)
         }
         
-        // set up control menu
+        // setup control menu
+
+        // control view
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
         controlView.center = self.view.center
         
@@ -401,7 +403,7 @@ extension LiveViewController {
        
         // setup filter data, menu
         let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
-        let filterData = ImageFilterData(menu: filterMenu, filter: imgFilter)
+        let filterData = ImageFilterData(menu: filterMenu, data: imgFilter)
         
         // enlarge menu pan gesture
         sizeControlView.dragEvent
@@ -413,7 +415,7 @@ extension LiveViewController {
                 guard resizeCondition != .none else { return }
                 
                 let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.filter.id == viewId
+                    $0.data.id == viewId
                 }!
                 
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
@@ -421,10 +423,10 @@ extension LiveViewController {
                 let bottomTrailingPoint = CGPoint(x: filterData.menu.sizeControl.center.x + translation.x,
                                                   y: filterData.menu.sizeControl.center.y + translation.y)
                 
-                var filterData = self.viewModel.filterList[changeIndex]
+                var filter = self.viewModel.filterList[changeIndex]
                 
                 let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
-                                                                  filterData: filterData,
+                                                                  filterData: filter,
                                                                   resizeValue: resizeValue,
                                                                   bottomTrailingPoint: bottomTrailingPoint)
                 
@@ -439,7 +441,7 @@ extension LiveViewController {
                 
                 let publishRect = CGRect(origin: publishPoint, size: publishSize)
                 
-                filterData.filter.rect = publishRect
+                filter.data.rect = publishRect
                 
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
@@ -466,7 +468,7 @@ extension LiveViewController {
                 let translation = gesture.translation(in: controlView)
                 
                 let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.filter.id == viewId
+                    $0.data.id == viewId
                 }!
                 
                 // update control view position
@@ -489,7 +491,7 @@ extension LiveViewController {
                 print("tapEvent", viewId, gesture)
                 
                 let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.filter.id == viewId
+                    $0.data.id == viewId
                 }!
                 
                 // update control view position
@@ -521,7 +523,7 @@ extension LiveViewController {
                 print("closeEvent", viewId)
                 
                 let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.filter.id == viewId
+                    $0.data.id == viewId
                 }!
                 
                 // read index filter data
