@@ -28,9 +28,6 @@ class ImageFilterControlView: UIImageView {
     
     func commonInit() {
         self.backgroundColor = .clear
-//        self.layer.borderWidth = 1
-//        self.layer.borderColor = UIColor.gray.cgColor
-        
         self.isUserInteractionEnabled = true
         self.isMultipleTouchEnabled = true
         
@@ -39,7 +36,10 @@ class ImageFilterControlView: UIImageView {
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureEvent))
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pichGestureEvent))
         
-        self.gestureRecognizers = [tapGesture, panGesture, pinchGesture]
+        self.gestureRecognizers = [panGesture, pinchGesture] //[tapGesture, panGesture, pinchGesture]
+        
+        //        self.layer.borderWidth = 1
+        //        self.layer.borderColor = UIColor.gray.cgColor
     }
     
     @objc func tapGestureEvent(_ gesture: UITapGestureRecognizer) {
@@ -68,7 +68,6 @@ class ImageFilterControlView: UIImageView {
 //            //그냥 지나가는게 아니니까 이미지 렌더 필요
 //            print(self.tag, "그냥 지나가는게 아니니까 이미지 렌더 필요")
 //        }
-        
         self.panEvent.send((self.tag, gesture))
     }
     

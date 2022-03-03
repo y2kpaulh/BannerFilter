@@ -149,10 +149,44 @@ class ViewModel {
             return resultRect
         }
     
+    func getTouchIndex(_ touchPoint: CGPoint) -> Int?{
+        var isTouched = false
+        var searchIndex: Int?
+        
+        for (index, filterData) in self.filterList.enumerated().reversed() {
+            let filterRect = filterData.menu.controlView.frame
+            if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
+                (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) &&
+                !isTouched {
+                isTouched = true
+                searchIndex = index
+            }
+        }
+        return searchIndex
+    }
+
     func getFilterIndex(_ viewId: Int) -> Int {
         return self.filterList.firstIndex {
            $0.data.id == viewId
        }!
+    }
+    
+    func updateControlMenu(_ filterId: Int) {
+        UIView.animate(withDuration: 0.1) {
+            self.filterList = self.filterList.map {
+                let indexData = $0
+                if filterId == indexData.data.id {
+                    indexData.menu.controlView.isUserInteractionEnabled = true
+                    indexData.menu.sizeControl.isHidden = false
+                    indexData.menu.closeButton.isHidden = false
+                } else {
+                    indexData.menu.controlView.isUserInteractionEnabled = false
+                    indexData.menu.sizeControl.isHidden = true
+                    indexData.menu.closeButton.isHidden = true
+                }
+               return indexData
+            }
+        }
     }
 }
 

@@ -104,32 +104,13 @@ final class LiveViewController: UIViewController {
         self.filterMenuView.okBtn.addTarget(self, action: #selector(tapfilerMenuOkBtn), for: .touchUpInside)
         
         self.filterMenuView.tapEvent.sink(receiveValue: { touchPoint in
-            var isTouched = false
-            
-            for (index, filterData) in self.viewModel.filterList.enumerated().reversed() {
-                let filterRect = filterData.menu.controlView.frame
-                let indexData = filterData
-                
-                UIView.animate(withDuration: 0.1) {
-                    if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
-                        (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) &&
-                        !isTouched {
-                        isTouched = true
-                        
-                        indexData.menu.controlView.isUserInteractionEnabled = true
-                        indexData.menu.sizeControl.isHidden = false
-                        indexData.menu.closeButton.isHidden = false
-                    } else {
-                        indexData.menu.controlView.isUserInteractionEnabled = false
-                        indexData.menu.sizeControl.isHidden = true
-                        indexData.menu.closeButton.isHidden = true
-                    }
-                    
-                    self.viewModel.filterList[index] = indexData
-                }
+            guard let touchIndex = self.viewModel.getTouchIndex(touchPoint) else {
+                return
             }
+            let filterId = self.viewModel.filterList[touchIndex].data.id
+            self.viewModel.updateControlMenu(filterId)
         })
-            .store(in: &self.cancelBag)
+        .store(in: &self.cancelBag)
         
         UIView.animate(withDuration: 0.1) {
             self.view.addSubview(self.filterMenuView)
@@ -573,10 +554,6 @@ extension LiveViewController {
         
         // draw control view
         UIView.animate(withDuration: 0.1) {
-            self.filterMenuView.addSubview(controlView)
-            self.filterMenuView.addSubview(sizeControlView)
-            self.filterMenuView.addSubview(closeBtn)
-            
             self.viewModel.filterList = self.viewModel.filterList.map {
                 let indexData = $0
                 indexData.menu.controlView.isUserInteractionEnabled = false
@@ -584,6 +561,10 @@ extension LiveViewController {
                 indexData.menu.closeButton.isHidden = true
                 return indexData
             }
+            
+            self.filterMenuView.addSubview(controlView)
+            self.filterMenuView.addSubview(sizeControlView)
+            self.filterMenuView.addSubview(closeBtn)
         }
         
         // add filter data
