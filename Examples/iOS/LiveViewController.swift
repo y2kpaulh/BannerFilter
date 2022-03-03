@@ -333,16 +333,16 @@ extension LiveViewController {
         let publishRect = CGRect(origin: publishPoint, size: publishSize)
         
         // read index data
-        var changefilterData = self.viewModel.filterList[changeIndex]
+        var indexFilterData = self.viewModel.filterList[changeIndex]
         
         //change Position
-        changefilterData.data.rect = publishRect
-        changefilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
+        indexFilterData.data.rect = publishRect
+        indexFilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.maxY - 5)
-        changefilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
+        indexFilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.origin.y + 5)
         // update index data
-        self.viewModel.filterList[changeIndex] = changefilterData
+        self.viewModel.filterList[changeIndex] = indexFilterData
     }
     
     fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
@@ -385,15 +385,21 @@ extension LiveViewController {
         }
         
         // enlagre view
-        let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
-        sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.maxY - 5)
+        let sizeControlView = ImageSizeControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0),
+                                                                 size: self.viewModel.controlBtnSize))
+        sizeControlView.center = CGPoint(x: controlView.frame.maxX - 5,
+                                         y: controlView.frame.maxY - 5)
         
         // close button
-        let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 30, height: 30)))
-        closeBtn.center = CGPoint(x: controlView.frame.maxX - 5, y: controlView.frame.origin.y + 5)
+        let closeBtn = ImageControlCloseButton(frame: CGRect(origin: CGPoint(x: 0, y: 0),
+                                                             size: self.viewModel.controlBtnSize))
+        closeBtn.center = CGPoint(x: controlView.frame.maxX - 5,
+                                  y: controlView.frame.origin.y + 5)
         
         //set up first position
-        let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) , y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)), size: publishSize)
+        let publishRect = CGRect(origin: CGPoint(x: (self.viewModel.currentResolution.width/2) - (publishSize.width/2) ,
+                                                 y: (self.viewModel.currentResolution.height/2) - (publishSize.height/2)),
+                                 size: publishSize)
         
         let imgFilter: ImageFilter = ImageFilter(rect: publishRect, imageArray: imageArray, info: imageInfo)
         
@@ -415,9 +421,7 @@ extension LiveViewController {
                                                                         endPoint: endPoint)
                 guard resizeCondition != .none else { return }
                 
-                let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.data.id == viewId
-                }!
+                let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
                 
@@ -467,11 +471,10 @@ extension LiveViewController {
         controlView.panEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
                 print("tapEvent", viewId, gesture)
+                
                 let translation = gesture.translation(in: controlView)
                 
-                let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.data.id == viewId
-                }!
+                let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 // update control view position
                 UIView.animate(withDuration: 0.1) { [weak self] in
@@ -479,10 +482,8 @@ extension LiveViewController {
                     controlView.center = CGPoint(x: controlView.center.x + translation.x,
                                                  y: controlView.center.y + translation.y)
                     
-                    let changeFrame = controlView.frame
-                    updateFilterPosition(changeIndex, changeFrame, self)
+                    updateFilterPosition(changeIndex, controlView.frame, self)
                 }
-                
                 gesture.setTranslation(CGPoint.zero, in: controlView)
             })
             .store(in: &self.cancelBag)
@@ -490,24 +491,20 @@ extension LiveViewController {
         // control view pinch gesture
         controlView.pinchEvent
             .sink(receiveValue: { [unowned self] (viewId, gesture) in
-                print("tapEvent", viewId, gesture)
+                print("pinchEvent", viewId, "scale", gesture.scale)
                 
-                let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.data.id == viewId
-                }!
+                let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 // update control view position
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
-                    
                     controlView.transform = controlView.transform.scaledBy(
                         x: gesture.scale,
                         y: gesture.scale
                     )
                     gesture.scale = 1
                     
-                    let changeFrame = controlView.frame
-                    updateFilterPosition(changeIndex, changeFrame, self)
+                    updateFilterPosition(changeIndex, controlView.frame, self)
                 }
             })
             .store(in: &self.cancelBag)
@@ -524,9 +521,7 @@ extension LiveViewController {
             .sink(receiveValue: { [unowned self] (viewId) in
                 print("closeEvent", viewId)
                 
-                let changeIndex = self.viewModel.filterList.firstIndex {
-                    $0.data.id == viewId
-                }!
+                let changeIndex = self.viewModel.getFilterIndex(viewId)
                 
                 // read index filter data
                 let filterMenu = self.viewModel.filterList[changeIndex].menu
@@ -536,7 +531,6 @@ extension LiveViewController {
                         if filterMenu.controlView.isAnimating {
                             filterMenu.controlView.stopAnimating()
                         }
-                        
                         // remove control view
                         filterMenu.controlView.removeFromSuperview()
                         filterMenu.sizeControl.removeFromSuperview()

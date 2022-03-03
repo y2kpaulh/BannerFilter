@@ -10,6 +10,7 @@ import UIKit
 import PhotosUI
 
 class ViewModel {
+    var controlBtnSize = CGSize(width: 30, height: 30)
     var currentResolution: CGSize = CGSize(width: 720, height: 1280)
     var screenRatio: CGSize {
         return CGSize(width: currentResolution.width/UIScreen.main.bounds.width, height: currentResolution.height/UIScreen.main.bounds.height)
@@ -148,7 +149,11 @@ class ViewModel {
             return resultRect
         }
     
-
+    func getFilterIndex(_ viewId: Int) -> Int {
+        return self.filterList.firstIndex {
+           $0.data.id == viewId
+       }!
+    }
 }
 
 extension UIViewController {
