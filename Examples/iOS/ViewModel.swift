@@ -96,58 +96,58 @@ class ViewModel {
     }
     
     func getTargetViewRect(_ resizeOption: ResizeOption, filterData: ImageFilterData, resizeValue: CGFloat, bottomTrailingPoint: CGPoint) -> CGRect {
-            var resultRect = CGRect(x: 0, y: 0, width: 0, height: 0)
-            var resultWidth: CGFloat = 0
-            var resultHeight: CGFloat = 0
-            var resultOrigin = CGPoint(x: 0, y: 0)
-            var resultSize = CGSize(width: 0, height: 0)
-    
-            var scaleFactor: CGFloat = 0
-            var targetLength: CGFloat = 0
-            var changedWidth: CGFloat = 0
-            let lastOuterImgFrame = filterData.menu.controlView.frame
-    
-            switch resizeOption {
-            case .smaller:
-                changedWidth = lastOuterImgFrame.width - (resizeValue * 2)
-                let minLength = currentResolution.width * 0.1
-    
-                if changedWidth > minLength {
-                    targetLength = changedWidth
-                } else {
-                    print("too small!")
-                    targetLength = minLength
-                }
-    
-            case .bigger:
-                changedWidth = lastOuterImgFrame.width + (resizeValue * 2)
-                let maxLength = currentResolution.width * 0.9
-    
-                if changedWidth > maxLength {
-                    print("too big!")
-                    targetLength = maxLength
-                } else {
-                    targetLength = changedWidth
-                }
-    
-            default:
-                break
+        var resultRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+        var resultWidth: CGFloat = 0
+        var resultHeight: CGFloat = 0
+        var resultOrigin = CGPoint(x: 0, y: 0)
+        var resultSize = CGSize(width: 0, height: 0)
+        
+        var scaleFactor: CGFloat = 0
+        var targetLength: CGFloat = 0
+        var changedWidth: CGFloat = 0
+        let lastOuterImgFrame = filterData.menu.controlView.frame
+        
+        switch resizeOption {
+        case .smaller:
+            changedWidth = lastOuterImgFrame.width - (resizeValue * 2)
+            let minLength = currentResolution.width * 0.1
+            
+            if changedWidth > minLength {
+                targetLength = changedWidth
+            } else {
+                print("too small!")
+                targetLength = minLength
             }
-    
-            scaleFactor = targetLength / filterData.data.info.ratio
-    
-            resultWidth = filterData.data.info.size.width * scaleFactor
-            resultHeight = filterData.data.info.size.height * scaleFactor
-    
-            resultSize = CGSize(width: resultWidth, height: resultHeight)
-    
-            resultOrigin = CGPoint(x: bottomTrailingPoint.x - resultWidth + 5,
-                                   y: bottomTrailingPoint.y - resultHeight + 5)
-    
-            resultRect = CGRect(origin: resultOrigin, size: resultSize)
-    
-            return resultRect
+            
+        case .bigger:
+            changedWidth = lastOuterImgFrame.width + (resizeValue * 2)
+            let maxLength = currentResolution.width * 0.9
+            
+            if changedWidth > maxLength {
+                print("too big!")
+                targetLength = maxLength
+            } else {
+                targetLength = changedWidth
+            }
+            
+        default:
+            break
         }
+        
+        scaleFactor = targetLength / filterData.data.info.ratio
+        
+        resultWidth = filterData.data.info.size.width * scaleFactor
+        resultHeight = filterData.data.info.size.height * scaleFactor
+        
+        resultSize = CGSize(width: resultWidth, height: resultHeight)
+        
+        resultOrigin = CGPoint(x: bottomTrailingPoint.x - resultWidth + 5,
+                               y: bottomTrailingPoint.y - resultHeight + 5)
+        
+        resultRect = CGRect(origin: resultOrigin, size: resultSize)
+        
+        return resultRect
+    }
     
     func getTouchIndex(_ touchPoint: CGPoint) -> Int?{
         var isTouched = false
@@ -184,7 +184,7 @@ class ViewModel {
                     indexData.menu.sizeControl.isHidden = true
                     indexData.menu.closeButton.isHidden = true
                 }
-               return indexData
+                return indexData
             }
         }
     }

@@ -206,7 +206,7 @@ final class LiveViewController: UIViewController {
     }
     
     @objc func tapfilerMenuOkBtn(_ sender: Any) {
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.1) {
             self.filterMenuView.removeFromSuperview()
             self.updateImageFilter(self.viewModel.filterList.map({
                 return $0.data
@@ -459,7 +459,6 @@ extension LiveViewController {
                 
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
-                    
                     //update position
                     dragFilterData.menu.controlView.frame = resultRect
                     dragFilterData.menu.controlView.center = lastCenterPos
@@ -514,13 +513,6 @@ extension LiveViewController {
                     
                     updateFilterPosition(changeIndex, controlView.frame, self)
                 }
-            })
-            .store(in: &self.cancelBag)
-        
-        // control view tap gesture
-        controlView.tapEvent
-            .sink(receiveValue: { [unowned self] (viewId) in
-                print("tapEvent", viewId)
             })
             .store(in: &self.cancelBag)
         
