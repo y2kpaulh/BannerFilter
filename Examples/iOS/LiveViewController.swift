@@ -333,21 +333,22 @@ extension LiveViewController {
         let publishRect = CGRect(origin: publishPoint, size: publishSize)
         
         // read index data
-        var filterData = self.viewModel.filterList[changeIndex]
+        var changefilterData = self.viewModel.filterList[changeIndex]
         
         //change Position
-        filterData.data.rect = publishRect
-        filterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
+        changefilterData.data.rect = publishRect
+        changefilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.maxY - 5)
-        filterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
+        changefilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
                                                      y: changeFrame.origin.y + 5)
         // update index data
-        self.viewModel.filterList[changeIndex] = filterData
+        self.viewModel.filterList[changeIndex] = changefilterData
     }
     
     fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
         let image: UIImage = imageArray[0]
         
+        // setup filter image
         let imageInfo = ImageInfo(size: image.size,
                                   ratio: max(image.size.width, image.size.height))
         
@@ -420,43 +421,44 @@ extension LiveViewController {
                 
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
                 
-                let bottomTrailingPoint = CGPoint(x: filterData.menu.sizeControl.center.x + translation.x,
-                                                  y: filterData.menu.sizeControl.center.y + translation.y)
+                var dragFilterData = self.viewModel.filterList[changeIndex]
+
+                let bottomTrailingPoint = CGPoint(x: dragFilterData.menu.sizeControl.center.x + translation.x,
+                                                  y: dragFilterData.menu.sizeControl.center.y + translation.y)
                 
-                var filter = self.viewModel.filterList[changeIndex]
                 
                 let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
-                                                                  filterData: filter,
+                                                                  filterData: dragFilterData,
                                                                   resizeValue: resizeValue,
                                                                   bottomTrailingPoint: bottomTrailingPoint)
                 
-                let lastCenterPos = filterData.menu.controlView.center
+                let lastCenterPos = dragFilterData.menu.controlView.center
                 
                 let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
                                          height: resultRect.size.height/publishSizeRatio.height)
                 
                 let publishPoint = CGPoint(
-                    x: filterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
-                    y: filterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
+                    x: dragFilterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,
+                    y: dragFilterData.menu.controlView.frame.origin.y * self.viewModel.screenRatio.height)
                 
                 let publishRect = CGRect(origin: publishPoint, size: publishSize)
                 
-                filter.data.rect = publishRect
+                dragFilterData.data.rect = publishRect
                 
                 UIView.animate(withDuration: 0.1) { [weak self] in
                     guard let self = self else { return }
                     
                     //update position
-                    filterData.menu.controlView.frame = resultRect
-                    filterData.menu.controlView.center = lastCenterPos
+                    dragFilterData.menu.controlView.frame = resultRect
+                    dragFilterData.menu.controlView.center = lastCenterPos
                     
-                    filterData.menu.sizeControl.center = CGPoint(x:filterData.menu.controlView.frame.maxX - 5,
-                                                                 y:filterData.menu.controlView.frame.maxY - 5)
-                    filterData.menu.closeButton.center = CGPoint(x: filterData.menu.controlView.frame.maxX - 5,
-                                                                 y: filterData.menu.controlView.frame.origin.y + 5)
+                    dragFilterData.menu.sizeControl.center = CGPoint(x:dragFilterData.menu.controlView.frame.maxX - 5,
+                                                                 y:dragFilterData.menu.controlView.frame.maxY - 5)
+                    dragFilterData.menu.closeButton.center = CGPoint(x: dragFilterData.menu.controlView.frame.maxX - 5,
+                                                                 y: dragFilterData.menu.controlView.frame.origin.y + 5)
                     
                     // update data
-                    self.viewModel.filterList[changeIndex] = filterData
+                    self.viewModel.filterList[changeIndex] = dragFilterData
                 }
             })
             .store(in: &self.cancelBag)
