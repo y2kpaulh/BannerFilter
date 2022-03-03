@@ -197,7 +197,6 @@ final class LiveViewController: UIViewController {
     }
     
     @objc func tapfilerMenuOkBtn(_ sender: Any) {
-        print("tapfilerMenuOkBtn")
         UIView.animate(withDuration: 0.5) {
             self.filterMenuView.removeFromSuperview()
             self.updateImageFilter(self.viewModel.filterList.map({
@@ -422,7 +421,7 @@ extension LiveViewController {
                                                                   bottomTrailingPoint: bottomTrailingPoint)
                 
                 let lastCenterPos = filterData.menu.controlView.center
-                                
+                
                 let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
                                          height: resultRect.size.height/publishSizeRatio.height)
                 
@@ -551,20 +550,29 @@ extension LiveViewController: PHPickerViewControllerDelegate {
                 itemProvider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, _ in
                     guard let self = self else { return }
                     guard let data = data else { return }
-                    
                     guard let imageArray = self.viewModel.changeDataToImageArray(data: data) else { return }
+                    
+                    var originalImageArray = [UIImage]()
+                    for image in imageArray {
+                        if let originalImage = image.upOrientationImage() {
+                            originalImageArray.append(originalImage)
+                        }
+                    }
+                    
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
-                        self.publishImageFilter(imageArray)
+                        self.publishImageFilter(originalImageArray)
                     }
                 }
             } else {
                 if itemProvider.canLoadObject(ofClass: UIImage.self) {
                     itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
-                        guard let image = image as? UIImage else { return }
+                        guard let image = image as? UIImage,
+                              let originalImage = image.upOrientationImage() else { return }
+                        
                         DispatchQueue.main.async { [weak self] in
                             guard let self = self else { return }
-                            self.publishImageFilter([image])
+                            self.publishImageFilter([originalImage])
                         }
                     }
                 } else {
