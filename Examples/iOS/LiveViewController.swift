@@ -52,11 +52,8 @@ final class LiveViewController: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
     
     var filterMenuView: ImageFilterMenuView!
-    
     var viewModel = ViewModel()
-    
-    var cancelBag = Set<AnyCancellable>()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -98,7 +95,7 @@ final class LiveViewController: UIViewController {
             .sink(receiveValue: { touchPoint in
                 self.viewModel.updateControlMenu(touchPoint)
             })
-            .store(in: &self.cancelBag)
+            .store(in: &self.subscriptions)
         
         UIView.animate(withDuration: 0.1) {
             self.view.addSubview(self.filterMenuView)
@@ -317,32 +314,7 @@ extension LiveViewController {
         _ = self.rtmpStream.registerVideoEffect(self.currentEffect!)
     }
     
-    fileprivate func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect, _ self: LiveViewController) {
-        //image filter scaling
-        let publishPoint = CGPoint(
-            x: changeFrame.origin.x * self.viewModel.screenRatio.width,
-            y: changeFrame.origin.y * self.viewModel.screenRatio.height)
-        
-        let publishSize = CGSize(
-            width: changeFrame.size.width * self.viewModel.screenRatio.width,
-            height: changeFrame.size.height * self.viewModel.screenRatio.height)
-        
-        let publishRect = CGRect(origin: publishPoint, size: publishSize)
-        
-        // read index data
-        var indexFilterData = self.viewModel.filterList[changeIndex]
-        
-        //change Position
-        indexFilterData.data.rect = publishRect
-        indexFilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
-                                                          y: changeFrame.maxY - 5)
-        indexFilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
-                                                          y: changeFrame.origin.y + 5)
-        // update index data
-        self.viewModel.filterList[changeIndex] = indexFilterData
-    }
-    
-    fileprivate func publishImageFilter(_ imageArray: [UIImage]) {
+     func publishImageFilter(_ imageArray: [UIImage]) {
         let image: UIImage = imageArray[0]
         
         // setup filter image
@@ -458,7 +430,7 @@ extension LiveViewController {
                     self.viewModel.filterList[changeIndex] = dragFilterData
                 }
             })
-            .store(in: &self.cancelBag)
+            .store(in: &self.subscriptions)
         
         // control view pan gesture
         controlView.panEvent
@@ -473,11 +445,11 @@ extension LiveViewController {
                     controlView.center = CGPoint(x: controlView.center.x + translation.x,
                                                  y: controlView.center.y + translation.y)
                     
-                    updateFilterPosition(changeIndex, controlView.frame, self)
+                    self.viewModel.updateFilterPosition(changeIndex, controlView.frame)
                 }
                 gesture.setTranslation(CGPoint.zero, in: controlView)
             })
-            .store(in: &self.cancelBag)
+            .store(in: &self.subscriptions)
         
         // control view pinch gesture
         controlView.pinchEvent
@@ -493,10 +465,10 @@ extension LiveViewController {
                     )
                     gesture.scale = 1
                     
-                    updateFilterPosition(changeIndex, controlView.frame, self)
+                    self.viewModel.updateFilterPosition(changeIndex, controlView.frame)
                 }
             })
-            .store(in: &self.cancelBag)
+            .store(in: &self.subscriptions)
         
         // close button event
         closeBtn.closeEvent
@@ -522,7 +494,7 @@ extension LiveViewController {
                     }
                 }
             })
-            .store(in: &self.cancelBag)
+            .store(in: &self.subscriptions)
         
         // draw control view
         UIView.animate(withDuration: 0.1) {

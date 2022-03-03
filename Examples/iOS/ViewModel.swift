@@ -209,6 +209,31 @@ class ViewModel {
         
         return indexData
     }
+    
+    func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect) {
+        //image filter scaling
+        let publishPoint = CGPoint(
+            x: changeFrame.origin.x * screenRatio.width,
+            y: changeFrame.origin.y * screenRatio.height)
+        
+        let publishSize = CGSize(
+            width: changeFrame.size.width * screenRatio.width,
+            height: changeFrame.size.height * screenRatio.height)
+        
+        let publishRect = CGRect(origin: publishPoint, size: publishSize)
+        
+        // read index data
+        var indexFilterData = filterList[changeIndex]
+        
+        //change Position
+        indexFilterData.data.rect = publishRect
+        indexFilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
+                                                          y: changeFrame.maxY - 5)
+        indexFilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
+                                                          y: changeFrame.origin.y + 5)
+        // update index data
+        filterList[changeIndex] = indexFilterData
+    }
 }
 
 extension UIViewController {
