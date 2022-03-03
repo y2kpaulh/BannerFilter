@@ -103,6 +103,34 @@ final class LiveViewController: UIViewController {
         self.filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
         self.filterMenuView.okBtn.addTarget(self, action: #selector(tapfilerMenuOkBtn), for: .touchUpInside)
         
+        self.filterMenuView.tapEvent.sink(receiveValue: { touchPoint in
+            var isTouched = false
+            
+            for (index, filterData) in self.viewModel.filterList.enumerated().reversed() {
+                let filterRect = filterData.menu.controlView.frame
+                let indexData = filterData
+                
+                UIView.animate(withDuration: 0.1) {
+                    if (touchPoint.x>=filterRect.minX && filterRect.maxX >= touchPoint.x) &&
+                        (touchPoint.y>=filterRect.minY && filterRect.maxY >= touchPoint.y) &&
+                        !isTouched {
+                        isTouched = true
+                        
+                        indexData.menu.controlView.isUserInteractionEnabled = true
+                        indexData.menu.sizeControl.isHidden = false
+                        indexData.menu.closeButton.isHidden = false
+                    } else {
+                        indexData.menu.controlView.isUserInteractionEnabled = false
+                        indexData.menu.sizeControl.isHidden = true
+                        indexData.menu.closeButton.isHidden = true
+                    }
+                    
+                    self.viewModel.filterList[index] = indexData
+                }
+            }
+        })
+            .store(in: &self.cancelBag)
+        
         UIView.animate(withDuration: 0.1) {
             self.view.addSubview(self.filterMenuView)
             
@@ -338,9 +366,9 @@ extension LiveViewController {
         //change Position
         indexFilterData.data.rect = publishRect
         indexFilterData.menu.sizeControl.center = CGPoint(x: changeFrame.maxX - 5,
-                                                     y: changeFrame.maxY - 5)
+                                                          y: changeFrame.maxY - 5)
         indexFilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
-                                                     y: changeFrame.origin.y + 5)
+                                                          y: changeFrame.origin.y + 5)
         // update index data
         self.viewModel.filterList[changeIndex] = indexFilterData
     }
@@ -371,7 +399,7 @@ extension LiveViewController {
         }
         
         // setup control menu
-
+        
         // control view
         let controlView = ImageFilterControlView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: screenScaledSize))
         controlView.center = self.view.center
@@ -407,7 +435,7 @@ extension LiveViewController {
         controlView.tag = imgFilter.id
         sizeControlView.tag = imgFilter.id
         closeBtn.tag = imgFilter.id
-       
+        
         // setup filter data, menu
         let filterMenu = ImageFilterMenu(controlView: controlView, sizeControl: sizeControlView, closeButton: closeBtn)
         let filterData = ImageFilterData(menu: filterMenu, data: imgFilter)
@@ -426,7 +454,7 @@ extension LiveViewController {
                 let resizeValue = self.CGPointDistance(from: beginPoint, to: endPoint)
                 
                 var dragFilterData = self.viewModel.filterList[changeIndex]
-
+                
                 let bottomTrailingPoint = CGPoint(x: dragFilterData.menu.sizeControl.center.x + translation.x,
                                                   y: dragFilterData.menu.sizeControl.center.y + translation.y)
                 
@@ -456,9 +484,9 @@ extension LiveViewController {
                     dragFilterData.menu.controlView.center = lastCenterPos
                     
                     dragFilterData.menu.sizeControl.center = CGPoint(x:dragFilterData.menu.controlView.frame.maxX - 5,
-                                                                 y:dragFilterData.menu.controlView.frame.maxY - 5)
+                                                                     y:dragFilterData.menu.controlView.frame.maxY - 5)
                     dragFilterData.menu.closeButton.center = CGPoint(x: dragFilterData.menu.controlView.frame.maxX - 5,
-                                                                 y: dragFilterData.menu.controlView.frame.origin.y + 5)
+                                                                     y: dragFilterData.menu.controlView.frame.origin.y + 5)
                     
                     // update data
                     self.viewModel.filterList[changeIndex] = dragFilterData
@@ -530,7 +558,7 @@ extension LiveViewController {
                         if filterMenu.controlView.isAnimating {
                             filterMenu.controlView.stopAnimating()
                         }
-
+                        
                         // remove control view
                         filterMenu.controlView.removeFromSuperview()
                         filterMenu.sizeControl.removeFromSuperview()
@@ -544,16 +572,18 @@ extension LiveViewController {
             .store(in: &self.cancelBag)
         
         // draw control view
-        self.filterMenuView.addSubview(controlView)
-        self.filterMenuView.addSubview(sizeControlView)
-        self.filterMenuView.addSubview(closeBtn)
-        
-        self.viewModel.filterList = self.viewModel.filterList.map {
-            let indexData = $0
-            indexData.menu.controlView.isUserInteractionEnabled = false
-            indexData.menu.sizeControl.isHidden = true
-            indexData.menu.closeButton.isHidden = true
-            return indexData
+        UIView.animate(withDuration: 0.1) {
+            self.filterMenuView.addSubview(controlView)
+            self.filterMenuView.addSubview(sizeControlView)
+            self.filterMenuView.addSubview(closeBtn)
+            
+            self.viewModel.filterList = self.viewModel.filterList.map {
+                let indexData = $0
+                indexData.menu.controlView.isUserInteractionEnabled = false
+                indexData.menu.sizeControl.isHidden = true
+                indexData.menu.closeButton.isHidden = true
+                return indexData
+            }
         }
         
         // add filter data

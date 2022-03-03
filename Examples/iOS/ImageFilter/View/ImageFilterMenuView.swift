@@ -17,6 +17,7 @@ class ImageFilterMenuView: UIView {
     var tapGesture = UITapGestureRecognizer()
     var filterArray: [ImageFilter]!
     var subscriptions = Set<AnyCancellable>()
+    var tapEvent = PassthroughSubject<CGPoint, Never>()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,7 +46,13 @@ class ImageFilterMenuView: UIView {
     }
     
     @objc func tapGestureEvent(_ gesture: UITapGestureRecognizer) {
+        guard let gestureView = gesture.view else {
+            return
+        }
         
+        let touchPoint: CGPoint = gesture.location(in: gestureView)
+        print("touchPoint", touchPoint)
+        self.tapEvent.send(touchPoint)
     }
     
     @objc func tapCloseBtn( _ sender: AnyObject) {
