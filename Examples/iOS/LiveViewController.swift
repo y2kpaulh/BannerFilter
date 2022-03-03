@@ -57,17 +57,8 @@ final class LiveViewController: UIViewController {
     
     var cancelBag = Set<AnyCancellable>()
     
-    var publishSizeRatio: CGSize {
-        return CGSize(width: (lfView.bounds.size.width/self.viewModel.currentResolution.width), height: (lfView.bounds.size.height/self.viewModel.currentResolution.height))
-    }
-    
-    var screenSizeRatio: CGSize {
-        return CGSize(width: (self.viewModel.currentResolution.width/lfView.bounds.size.width), height: (self.viewModel.currentResolution.height/lfView.bounds.size.height))
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("UIScreen.main.bounds: \(UIScreen.main.bounds)")
         
         rtmpStream = RTMPStream(connection: rtmpConnection)
         if let orientation = DeviceUtil.videoOrientation(by: UIApplication.shared.statusBarOrientation) {
@@ -362,8 +353,8 @@ extension LiveViewController {
                                  height: image.size.height)
         
         var screenScaledSize = CGSize(
-            width: publishSize.width * publishSizeRatio.width,
-            height: publishSize.height * publishSizeRatio.height)
+            width: publishSize.width * self.viewModel.publishSizeRatio.width,
+            height: publishSize.height * self.viewModel.publishSizeRatio.height)
         
         if publishSize.width > self.viewModel.currentResolution.width * 0.9 {
             let maxLength = self.viewModel.currentResolution.width * 0.9
@@ -372,8 +363,8 @@ extension LiveViewController {
             publishSize = CGSize(width: publishSize.width * scaleFactor,
                                  height: publishSize.height * scaleFactor)
             screenScaledSize = CGSize(
-                width: publishSize.width * publishSizeRatio.width,
-                height: publishSize.height * publishSizeRatio.height)
+                width: publishSize.width * self.viewModel.publishSizeRatio.width,
+                height: publishSize.height * self.viewModel.publishSizeRatio.height)
         }
         
         // setup control menu
@@ -441,8 +432,8 @@ extension LiveViewController {
                 
                 let lastCenterPos = dragFilterData.menu.controlView.center
                 
-                let publishSize = CGSize(width: resultRect.size.width/publishSizeRatio.width,
-                                         height: resultRect.size.height/publishSizeRatio.height)
+                let publishSize = CGSize(width: resultRect.size.width/self.viewModel.publishSizeRatio.width,
+                                         height: resultRect.size.height/self.viewModel.publishSizeRatio.height)
                 
                 let publishPoint = CGPoint(
                     x: dragFilterData.menu.controlView.frame.origin.x * self.viewModel.screenRatio.width,

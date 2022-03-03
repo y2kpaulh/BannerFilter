@@ -15,6 +15,15 @@ class ViewModel {
     var screenRatio: CGSize {
         return CGSize(width: currentResolution.width/UIScreen.main.bounds.width, height: currentResolution.height/UIScreen.main.bounds.height)
     }
+    
+    var publishSizeRatio: CGSize {
+        return CGSize(width: (UIScreen.main.bounds.size.width/currentResolution.width), height: (UIScreen.main.bounds.size.height/currentResolution.height))
+    }
+    
+    var screenSizeRatio: CGSize {
+        return CGSize(width: (currentResolution.width/UIScreen.main.bounds.size.width), height: (currentResolution.height/UIScreen.main.bounds.size.height))
+    }
+    
     var filterList = [ImageFilterData]()
     
     func configPhotosUI() {
