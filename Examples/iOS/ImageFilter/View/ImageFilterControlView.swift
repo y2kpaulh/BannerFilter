@@ -48,28 +48,27 @@ class ImageFilterControlView: UIImageView {
     
     @objc func panGestureEvent(_ gesture: UIPanGestureRecognizer) {
 //        let translation = gesture.translation(in: self)
-     
-        //        let velocity = gesture.velocity(in: self)
-        //        let speedThreshold:CGFloat = 300
-        //
-        //        print(self.tag, "velocity", velocity)
-        //
-        //        if velocity.x.magnitude > velocity.y.magnitude {
-        //          //좌우
-        //          velocity.x < 0 ? print("좌") :  print("우")
-        //        } else {
-        //          //상하
-        //          velocity.y < 0 ? print("상") :  print("하")
-        //        }
-        //
-        //        if velocity.y.magnitude > speedThreshold {
-        //            // 그냥 지나가는거니까 이미지 렌더 필요 없음
-        //            print(self.tag, "그냥 지나가는거니까 이미지 렌더 필요 없음")
-        //        } else {
-        //            //그냥 지나가는게 아니니까 이미지 렌더 필요
-        //            print(self.tag, "그냥 지나가는게 아니니까 이미지 렌더 필요")
-        //        }
-    
+//        let velocity = gesture.velocity(in: self)
+//        let speedThreshold:CGFloat = 300
+//
+//        print(self.tag, "velocity", velocity)
+//
+//        if velocity.x.magnitude > velocity.y.magnitude {
+//            //좌우
+//            velocity.x < 0 ? print("좌") :  print("우")
+//        } else {
+//            //상하
+//            velocity.y < 0 ? print("상") :  print("하")
+//        }
+//
+//        if velocity.y.magnitude > speedThreshold {
+//            // 그냥 지나가는거니까 이미지 렌더 필요 없음
+//            print(self.tag, "그냥 지나가는거니까 이미지 렌더 필요 없음")
+//        } else {
+//            //그냥 지나가는게 아니니까 이미지 렌더 필요
+//            print(self.tag, "그냥 지나가는게 아니니까 이미지 렌더 필요")
+//        }
+        
         self.panEvent.send((self.tag, gesture))
     }
     

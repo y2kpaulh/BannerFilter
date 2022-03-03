@@ -430,7 +430,6 @@ extension LiveViewController {
                 let bottomTrailingPoint = CGPoint(x: dragFilterData.menu.sizeControl.center.x + translation.x,
                                                   y: dragFilterData.menu.sizeControl.center.y + translation.y)
                 
-                
                 let resultRect = self.viewModel.getTargetViewRect(resizeCondition,
                                                                   filterData: dragFilterData,
                                                                   resizeValue: resizeValue,
@@ -531,6 +530,12 @@ extension LiveViewController {
                         if filterMenu.controlView.isAnimating {
                             filterMenu.controlView.stopAnimating()
                         }
+                        
+                        //change gray view in control view area
+                        let grayView = UIView(frame: filterMenu.controlView.frame)
+                        grayView.backgroundColor = .black.withAlphaComponent(0.5)
+                        self.filterMenuView.addSubview(grayView)
+
                         // remove control view
                         filterMenu.controlView.removeFromSuperview()
                         filterMenu.sizeControl.removeFromSuperview()

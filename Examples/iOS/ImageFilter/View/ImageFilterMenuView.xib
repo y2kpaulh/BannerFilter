@@ -98,11 +98,14 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                 </button>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradationBgTop" translatesAutoresizingMaskIntoConstraints="NO" id="WwE-DS-RGV">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="160"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="160" id="pBL-CV-0CB"/>
+                    </constraints>
+                </imageView>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradationBgBottom" translatesAutoresizingMaskIntoConstraints="NO" id="cH6-YZ-XgB">
                     <rect key="frame" x="0.0" y="267" width="375" height="400"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="400" id="YMe-Ss-LzI"/>
-                    </constraints>
                 </imageView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -110,11 +113,14 @@
                 <constraint firstAttribute="trailing" secondItem="EMz-hC-N1k" secondAttribute="trailing" constant="4" id="0Bm-AF-9Vo"/>
                 <constraint firstItem="8zh-TV-c6A" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="1FU-Bj-bgW"/>
                 <constraint firstItem="cH6-YZ-XgB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="2Zn-me-NNS"/>
+                <constraint firstAttribute="trailing" secondItem="WwE-DS-RGV" secondAttribute="trailing" id="682-RQ-iJh"/>
                 <constraint firstItem="EMz-hC-N1k" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="AUa-lh-DBz"/>
                 <constraint firstAttribute="bottom" secondItem="cH6-YZ-XgB" secondAttribute="bottom" id="Jkt-ye-ewP"/>
                 <constraint firstAttribute="bottom" secondItem="8zh-TV-c6A" secondAttribute="bottom" constant="30" id="S3x-Tm-YuI"/>
                 <constraint firstItem="hcp-7G-5n4" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="VEz-vb-vkv"/>
                 <constraint firstAttribute="trailing" secondItem="cH6-YZ-XgB" secondAttribute="trailing" id="X7J-ZJ-Pou"/>
+                <constraint firstItem="WwE-DS-RGV" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="c23-u2-9X5"/>
+                <constraint firstItem="WwE-DS-RGV" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="eKY-4a-5uh"/>
                 <constraint firstItem="hcp-7G-5n4" firstAttribute="centerY" secondItem="8zh-TV-c6A" secondAttribute="centerY" id="ujf-Wx-5Qd"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -123,5 +129,6 @@
     </objects>
     <resources>
         <image name="gradationBgBottom" width="360" height="400"/>
+        <image name="gradationBgTop" width="360" height="160"/>
     </resources>
 </document>
