@@ -103,14 +103,11 @@ final class LiveViewController: UIViewController {
         self.filterMenuView.addBtn.addTarget(self, action: #selector(selectPhotos), for: .touchUpInside)
         self.filterMenuView.okBtn.addTarget(self, action: #selector(tapfilerMenuOkBtn), for: .touchUpInside)
         
-        self.filterMenuView.tapEvent.sink(receiveValue: { touchPoint in
-            guard let touchIndex = self.viewModel.getTouchIndex(touchPoint) else {
-                return
-            }
-            let filterId = self.viewModel.filterList[touchIndex].data.id
-            self.viewModel.updateControlMenu(filterId)
-        })
-        .store(in: &self.cancelBag)
+        self.filterMenuView.tapEvent
+            .sink(receiveValue: { touchPoint in
+                self.viewModel.updateControlMenu(touchPoint)
+            })
+            .store(in: &self.cancelBag)
         
         UIView.animate(withDuration: 0.1) {
             self.view.addSubview(self.filterMenuView)
@@ -547,10 +544,8 @@ extension LiveViewController {
         // draw control view
         UIView.animate(withDuration: 0.1) {
             self.viewModel.filterList = self.viewModel.filterList.map {
-                let indexData = $0
-                indexData.menu.controlView.isUserInteractionEnabled = false
-                indexData.menu.sizeControl.isHidden = true
-                indexData.menu.closeButton.isHidden = true
+                var indexData = $0
+                indexData = self.viewModel.displayFilterMenu(indexData, isTouched: false)
                 return indexData
             }
             

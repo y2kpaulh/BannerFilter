@@ -84,18 +84,16 @@ class ViewModel {
         }
         
         if isLeft && isUp {
-            print("smaller")
             resizeOption = .smaller
         }
         else if isRight && isDown {
-            print("bigger")
             resizeOption = .bigger
         }
         
         return resizeOption
     }
     
-    func getTargetViewRect(_ resizeOption: ResizeOption, filterData: ImageFilterData, resizeValue: CGFloat, bottomTrailingPoint: CGPoint) -> CGRect {
+    func getTargetViewRect(_ resizeOption: ResizeOption, filterData: ImageFilterData, resizeValue: CGFloat,  bottomTrailingPoint: CGPoint) -> CGRect {
         var resultRect = CGRect(x: 0, y: 0, width: 0, height: 0)
         var resultWidth: CGFloat = 0
         var resultHeight: CGFloat = 0
@@ -171,22 +169,36 @@ class ViewModel {
        }!
     }
     
-    func updateControlMenu(_ filterId: Int) {
-        UIView.animate(withDuration: 0.1) {
+    func updateControlMenu(_ touchPoint: CGPoint) {
+        let searchIndex = self.getTouchIndex(touchPoint)
+//        let filterId = self.filterList[searchIndex].data.id
+        
+        UIView.animate(withDuration: 0.1) { [self] in
             self.filterList = self.filterList.map {
-                let indexData = $0
-                if filterId == indexData.data.id {
-                    indexData.menu.controlView.isUserInteractionEnabled = true
-                    indexData.menu.sizeControl.isHidden = false
-                    indexData.menu.closeButton.isHidden = false
+                var indexData = $0
+                if let touchedIndex = searchIndex {
+                    let filterId = self.filterList[touchedIndex].data.id
+                    
+                    if filterId == indexData.data.id {
+                        indexData = displayFilterMenu(indexData, isTouched: true)
+                    } else {
+                        indexData = displayFilterMenu(indexData, isTouched: false)
+                    }
                 } else {
-                    indexData.menu.controlView.isUserInteractionEnabled = false
-                    indexData.menu.sizeControl.isHidden = true
-                    indexData.menu.closeButton.isHidden = true
+                    indexData = displayFilterMenu(indexData, isTouched: false)
                 }
+                
                 return indexData
             }
         }
+    }
+    
+    func displayFilterMenu(_ indexData: ImageFilterData, isTouched: Bool) -> ImageFilterData {
+        indexData.menu.controlView.isUserInteractionEnabled = isTouched
+        indexData.menu.sizeControl.isHidden = !isTouched
+        indexData.menu.closeButton.isHidden = !isTouched
+        
+        return indexData
     }
 }
 
