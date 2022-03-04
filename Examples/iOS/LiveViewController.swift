@@ -469,6 +469,33 @@ extension LiveViewController {
                 }
             })
             .store(in: &self.subscriptions)
+         
+         // control view rotation gesture
+         controlView.rotationEvent
+             .sink(receiveValue: { [unowned self] (viewId, gesture) in
+                 let changeIndex = self.viewModel.getFilterIndex(viewId)
+                 
+                 // update control view position
+                 UIView.animate(withDuration: 0.1) { [weak self] in
+                     guard let self = self else { return }
+                     
+                     guard let gestureView = gesture.view else {
+                       return
+                     }
+                     
+                     gestureView.transform = gestureView.transform.rotated(
+                       by: gesture.rotation
+                     )
+
+                     let radians: Double = atan2(Double(gestureView.transform.b), Double(gestureView.transform.a))
+                     let degrees = radians * Double((180 / Float.pi))
+
+                     self.viewModel.updateFilterPosition(changeIndex, controlView.frame, degrees)
+
+                     gesture.rotation = 0
+                 }
+             })
+             .store(in: &self.subscriptions)
         
         // close button event
         closeBtn.closeEvent

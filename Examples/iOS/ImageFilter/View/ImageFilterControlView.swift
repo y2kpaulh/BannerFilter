@@ -11,9 +11,12 @@ import Combine
 class ImageFilterControlView: UIImageView {
     var panGesture = UIPanGestureRecognizer()
     var pinchGesture = UIPinchGestureRecognizer()
+    var rotationGesture = UIRotationGestureRecognizer()
+
     var panEvent = PassthroughSubject<(Int, UIPanGestureRecognizer), Never>()
     var pinchEvent = PassthroughSubject<(Int, UIPinchGestureRecognizer), Never>()
-    
+    var rotationEvent = PassthroughSubject<(Int, UIRotationGestureRecognizer), Never>()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -30,9 +33,12 @@ class ImageFilterControlView: UIImageView {
         
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureEvent))
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pichGestureEvent))
-        pinchGesture.require(toFail: panGesture)
+        rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(rotationGestureEvent))
         
-        self.gestureRecognizers = [panGesture, pinchGesture]
+        pinchGesture.scale = 1
+        rotationGesture.rotation = 0
+
+        self.gestureRecognizers = [panGesture, pinchGesture, rotationGesture]
     }
     
     @objc func panGestureEvent(_ gesture: UIPanGestureRecognizer) {
@@ -41,5 +47,9 @@ class ImageFilterControlView: UIImageView {
     
     @objc func pichGestureEvent(_ gesture: UIPinchGestureRecognizer) {
         self.pinchEvent.send((self.tag, gesture))
+    }
+    
+    @objc func rotationGestureEvent(_ gesture: UIRotationGestureRecognizer) {
+        self.rotationEvent.send((self.tag, gesture))
     }
 }

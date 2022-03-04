@@ -16,6 +16,7 @@ struct ImageFilterMenu {
 struct ImageFilter {
     var id = Int.random(in: 1...100)
     var rect: CGRect
+    var degrees: Double?
     var imageArray: [UIImage]
     let info: ImageInfo
 }

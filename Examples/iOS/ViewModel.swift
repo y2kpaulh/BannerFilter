@@ -210,7 +210,7 @@ class ViewModel {
         return indexData
     }
     
-    func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect) {
+    func updateFilterPosition(_ changeIndex:Int, _ changeFrame: CGRect, _ degrees: Double? = nil) {
         //image filter scaling
         let publishPoint = CGPoint(
             x: changeFrame.origin.x * screenRatio.width,
@@ -231,8 +231,15 @@ class ViewModel {
                                                           y: changeFrame.maxY - 5)
         indexFilterData.menu.closeButton.center = CGPoint(x: changeFrame.maxX - 5,
                                                           y: changeFrame.origin.y + 5)
+        
+        if let degrees = degrees {
+            indexFilterData.data.degrees = degrees
+        }
+
         // update index data
         filterList[changeIndex] = indexFilterData
+        
+        
     }
 }
 

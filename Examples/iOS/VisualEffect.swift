@@ -200,9 +200,9 @@ final class ImageFilterEffect: VideoEffect {
             
             var targetImage: UIImage = layer.imageArray[currIndexArray[index]]
             
-            //            if let degrees = layer.degrees {
-            //                targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
-            //            }
+            if let degrees = layer.degrees {
+                targetImage = targetImage.rotated(by: Measurement(value: degrees, unit: .degrees))!
+            }
             
             targetImage = targetImage.resize(targetSize: layer.rect.size)
             
